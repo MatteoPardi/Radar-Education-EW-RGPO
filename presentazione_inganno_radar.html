@@ -155,29 +155,30 @@
         .radar-wave {
             position: absolute;
             border-radius: 50%;
-            border: 4px solid;
+            border: 3px solid;
             pointer-events: none;
             z-index: 10;
             transform: translate(-50%, -50%);
             box-sizing: border-box;
+            transition: opacity 0.1s ease-out;
         }
 
         .wave-outgoing {
             border-color: #00ffff;
-            box-shadow: 0 0 15px #00ffff, 0 0 30px rgba(0, 255, 255, 0.6), 0 0 50px rgba(0, 255, 255, 0.3);
-            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, rgba(0, 255, 255, 0.1) 40%, transparent 70%);
+            box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0, 255, 255, 0.7), 0 0 60px rgba(0, 255, 255, 0.4), 0 0 80px rgba(0, 255, 255, 0.2);
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.4) 0%, rgba(0, 255, 255, 0.2) 30%, rgba(0, 255, 255, 0.05) 60%, transparent 80%);
         }
 
         .wave-return {
             border-color: #00ff88;
-            box-shadow: 0 0 15px #00ff88, 0 0 30px rgba(0, 255, 136, 0.6), 0 0 50px rgba(0, 255, 136, 0.3);
-            background: radial-gradient(circle, rgba(0, 255, 136, 0.3) 0%, rgba(0, 255, 136, 0.1) 40%, transparent 70%);
+            box-shadow: 0 0 20px #00ff88, 0 0 40px rgba(0, 255, 136, 0.7), 0 0 60px rgba(0, 255, 136, 0.4), 0 0 80px rgba(0, 255, 136, 0.2);
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.4) 0%, rgba(0, 255, 136, 0.2) 30%, rgba(0, 255, 136, 0.05) 60%, transparent 80%);
         }
 
         .wave-return.fake {
             border-color: #ffaa00;
-            box-shadow: 0 0 15px #ffaa00, 0 0 30px rgba(255, 170, 0, 0.6), 0 0 50px rgba(255, 170, 0, 0.3);
-            background: radial-gradient(circle, rgba(255, 170, 0, 0.3) 0%, rgba(255, 170, 0, 0.1) 40%, transparent 70%);
+            box-shadow: 0 0 20px #ffaa00, 0 0 40px rgba(255, 170, 0, 0.7), 0 0 60px rgba(255, 170, 0, 0.4), 0 0 80px rgba(255, 170, 0, 0.2);
+            background: radial-gradient(circle, rgba(255, 170, 0, 0.4) 0%, rgba(255, 170, 0, 0.2) 30%, rgba(255, 170, 0, 0.05) 60%, transparent 80%);
         }
 
         /* Schermo radar circolare */
@@ -511,8 +512,8 @@
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
-                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
-                        <div class="radar-blip" style="top: 65%; left: 72%;"></div>
+                        <div class="radar-blip" style="top: 55%; left: 65%;"></div>
+                        <div class="radar-blip" style="top: 70%; left: 75%;"></div>
                     </div>
                 </div>
             </div>
@@ -538,8 +539,8 @@
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
-                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
-                        <div class="radar-blip" style="top: 65%; left: 72%;"></div>
+                        <div class="radar-blip" style="top: 55%; left: 65%;"></div>
+                        <div class="radar-blip" style="top: 70%; left: 75%;"></div>
                     </div>
                 </div>
             </div>
@@ -565,8 +566,8 @@
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
-                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
-                        <div class="radar-blip blip-moving" style="top: 60%; left: 70%;"></div>
+                        <div class="radar-blip" style="top: 55%; left: 65%;"></div>
+                        <div class="radar-blip blip-moving" style="top: 60%; left: 68%;"></div>
                     </div>
                 </div>
             </div>
@@ -689,15 +690,12 @@
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false);
-                        // Calcola il tempo di andata per sincronizzare il ritorno
-                        const dx = aircraftX - radarX;
-                        const dy = aircraftY - radarY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        const timeToTarget = Math.max(0.8, Math.min(distance / 800, 2.5));
-                        setTimeout(() => {
+                        // Onda outgoing: centro fisso sul radar, si espande fino a toccare l'aereo
+                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
+                            // Quando l'onda tocca il target, parte l'onda riflessa
+                            // Onda return: centro fisso sull'aereo, si espande verso il radar
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
-                        }, timeToTarget * 1000);
+                        });
                     }
                 } else if (slideIndex === 1) {
                     // Slide 2: impulso e blip
@@ -706,13 +704,9 @@
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        const dx = aircraftX - radarX;
-                        const dy = aircraftY - radarY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        const timeToTarget = Math.max(0.8, Math.min(distance / 800, 2.5));
-                        
-                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false);
-                        setTimeout(() => {
+                        // Onda outgoing: centro fisso sul radar
+                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
+                            // Quando l'onda tocca il target, parte l'onda riflessa e appare il blip
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
                             const blip = slide.querySelector('.radar-blip');
                             if (blip) {
@@ -720,7 +714,7 @@
                                 positionBlipOnScreen(slide, aircraftX, aircraftY, blip);
                                 blip.classList.add('blip-appear');
                             }
-                        }, timeToTarget * 1000);
+                        });
                     }
                 } else if (slideIndex === 2) {
                     // Slide 3: impulso a due aerei, due blip
@@ -733,34 +727,72 @@
                         const aircraft2X = aircraft2Rect.left - visualRect.left + aircraft2Rect.width / 2;
                         const aircraft2Y = aircraft2Rect.top - visualRect.top + aircraft2Rect.height / 2;
                         
+                        // Calcola distanze per determinare quale aereo viene toccato per primo
                         const dx1 = aircraft1X - radarX;
                         const dy1 = aircraft1Y - radarY;
                         const distance1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
-                        const timeToTarget1 = Math.max(0.8, Math.min(distance1 / 800, 2.5));
                         
-                        createWave(slide, radarX, radarY, aircraft1X, aircraft1Y, 'outgoing', false);
-                        setTimeout(() => {
-                            createWave(slide, aircraft1X, aircraft1Y, radarX, radarY, 'return', false);
-                            const dx2 = aircraft2X - radarX;
-                            const dy2 = aircraft2Y - radarY;
-                            const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-                            const timeToTarget2 = Math.max(0.8, Math.min(distance2 / 800, 2.5));
-                            // Il secondo aereo è più lontano, quindi l'eco arriva dopo
-                            setTimeout(() => {
-                                createWave(slide, aircraft2X, aircraft2Y, radarX, radarY, 'return', false);
-                            }, (timeToTarget2 - timeToTarget1) * 1000);
+                        const dx2 = aircraft2X - radarX;
+                        const dy2 = aircraft2Y - radarY;
+                        const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                        
+                        // Usa il target più vicino come riferimento per il callback
+                        const nearestTarget = distance1 <= distance2 ? 
+                            {x: aircraft1X, y: aircraft1Y, distance: distance1} : 
+                            {x: aircraft2X, y: aircraft2Y, distance: distance2};
+                        const farthestTarget = distance1 > distance2 ? 
+                            {x: aircraft1X, y: aircraft1Y, distance: distance1} : 
+                            {x: aircraft2X, y: aircraft2Y, distance: distance2};
+                        
+                        // Onda outgoing: centro fisso sul radar, si espande e tocca entrambi gli aerei
+                        createWave(slide, radarX, radarY, nearestTarget.x, nearestTarget.y, 'outgoing', false, () => {
+                            // Quando l'onda tocca il target più vicino, parte l'eco
+                            createWave(slide, nearestTarget.x, nearestTarget.y, radarX, radarY, 'return', false);
+                            
+                            // Se c'è un target più lontano, calcola quando viene toccato
+                            if (farthestTarget.distance > nearestTarget.distance) {
+                                const timeDiff = ((farthestTarget.distance - nearestTarget.distance) / 600) * 1000;
+                                setTimeout(() => {
+                                    createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false);
+                                }, timeDiff);
+                            } else {
+                                // Se sono alla stessa distanza, parte subito
+                                createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false);
+                            }
                             
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
                                 positionBlipOnScreen(slide, aircraft1X, aircraft1Y, blips[0]);
                                 positionBlipOnScreen(slide, aircraft2X, aircraft2Y, blips[1]);
+                                
+                                // Aumenta la separazione tra i due blip sullo schermo
+                                const blip1Left = parseFloat(blips[0].style.left);
+                                const blip1Top = parseFloat(blips[0].style.top);
+                                const blip2Left = parseFloat(blips[1].style.left);
+                                const blip2Top = parseFloat(blips[1].style.top);
+                                
+                                const dx = blip2Left - blip1Left;
+                                const dy = blip2Top - blip1Top;
+                                const distance = Math.sqrt(dx * dx + dy * dy);
+                                
+                                // Se i blip sono troppo vicini, aumenta la separazione
+                                const minSeparation = 50; // separazione minima in pixel
+                                if (distance < minSeparation && distance > 0) {
+                                    const scale = minSeparation / distance;
+                                    const newDx = dx * scale;
+                                    const newDy = dy * scale;
+                                    // Sposta il secondo blip più lontano dal primo
+                                    blips[1].style.left = (blip1Left + newDx) + 'px';
+                                    blips[1].style.top = (blip1Top + newDy) + 'px';
+                                }
+                                
                                 blips.forEach((blip, i) => {
                                     setTimeout(() => {
                                         blip.classList.add('blip-appear');
                                     }, i * 200);
                                 });
                             }
-                        }, timeToTarget1 * 1000);
+                        });
                     }
                 } else if (slideIndex === 3) {
                     // Slide 4: impulso e due blip (uno finto)
@@ -769,30 +801,27 @@
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        const dx = aircraftX - radarX;
-                        const dy = aircraftY - radarY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        const timeToTarget = Math.max(0.8, Math.min(distance / 800, 2.5));
-                        
-                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false);
-                        setTimeout(() => {
+                        // Onda outgoing: centro fisso sul radar
+                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
+                            // Quando l'onda tocca il target, parte l'onda riflessa vera
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
+                            // Poco dopo parte anche l'eco finto (simula il sistema di inganno)
                             setTimeout(() => {
-                                // Eco finto dallo stesso punto
                                 createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true);
-                            }, 100);
+                            }, 200);
+                            
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
                                 positionBlipOnScreen(slide, aircraftX, aircraftY, blips[0]);
-                                // Il secondo blip è leggermente spostato (finto)
-                                positionBlipOnScreen(slide, aircraftX + 20, aircraftY + 20, blips[1]);
+                                // Il secondo blip è leggermente spostato (finto) - separazione maggiore
+                                positionBlipOnScreen(slide, aircraftX + 60, aircraftY + 60, blips[1]);
                                 blips.forEach((blip, i) => {
                                     setTimeout(() => {
                                         blip.classList.add('blip-appear');
                                     }, i * 200);
                                 });
                             }
-                        }, timeToTarget * 1000);
+                        });
                     }
                 } else if (slideIndex === 4) {
                     // Slide 5: RGPO - blip che si muove
@@ -801,18 +830,16 @@
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        const dx = aircraftX - radarX;
-                        const dy = aircraftY - radarY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        const timeToTarget = Math.max(0.8, Math.min(distance / 800, 2.5));
-                        
-                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false);
-                        setTimeout(() => {
+                        // Onda outgoing: centro fisso sul radar
+                        createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
+                            // Quando l'onda tocca il target, parte l'onda riflessa
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
+                            
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
                                 positionBlipOnScreen(slide, aircraftX, aircraftY, blips[0]);
-                                positionBlipOnScreen(slide, aircraftX, aircraftY, blips[1]);
+                                // Il secondo blip parte leggermente separato (finto, poi si muove)
+                                positionBlipOnScreen(slide, aircraftX + 40, aircraftY + 30, blips[1]);
                                 // Blip reale (primo)
                                 blips[0].classList.add('blip-appear', 'blip-real');
                                 setTimeout(() => {
@@ -825,7 +852,7 @@
                                     }, 500);
                                 }, 300);
                             }
-                        }, timeToTarget * 1000);
+                        });
                     }
                 }
             }, 500);
@@ -874,21 +901,23 @@
             blip.style.top = screenY + 'px';
         }
 
-        function createWave(slide, x1, y1, x2, y2, type, isFake = false) {
+        function createWave(slide, centerX, centerY, targetX, targetY, type, isFake = false, onReachTarget = null) {
             const visualArea = slide.querySelector('.visual-area');
             if (!visualArea) return;
             
-            const dx = x2 - x1;
-            const dy = y2 - y1;
+            const dx = targetX - centerX;
+            const dy = targetY - centerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
             // Velocità costante: calcola il tempo in base alla distanza
-            // Assumiamo una velocità di 800px/s per l'animazione (velocità della luce simulata)
-            const animDuration = Math.max(0.8, Math.min(distance / 800, 2.5)); // tra 0.8 e 2.5 secondi
+            // Assumiamo una velocità di 600px/s per l'animazione (velocità della luce simulata)
+            const animDuration = Math.max(1.0, Math.min(distance / 600, 3.0)); // tra 1.0 e 3.0 secondi
             
             // Crea più onde concentriche per mostrare la propagazione sferica
-            const numWaves = 4; // Numero di onde concentriche
-            const waveDelay = 120; // Delay tra onde in ms
+            const numWaves = 5; // Numero di onde concentriche
+            const waveDelay = 150; // Delay tra onde in ms
+            
+            let targetReached = false;
             
             for (let i = 0; i < numWaves; i++) {
                 setTimeout(() => {
@@ -898,39 +927,51 @@
                         wave.classList.add('fake');
                     }
                     
-                    wave.style.left = x1 + 'px';
-                    wave.style.top = y1 + 'px';
-                    const startSize = 25 + i * 12; // Ogni onda parte leggermente più grande
+                    // Il centro rimane fisso sulla sorgente
+                    wave.style.left = centerX + 'px';
+                    wave.style.top = centerY + 'px';
+                    const startSize = 20 + i * 15; // Ogni onda parte leggermente più grande
                     wave.style.width = startSize + 'px';
                     wave.style.height = startSize + 'px';
                     
                     visualArea.appendChild(wave);
                     
-                    // Anima l'espansione dell'onda mentre si muove
+                    // Anima l'espansione dell'onda (centro fisso, si espande radialmente)
                     let startTime = Date.now();
-                    const maxSize = Math.max(distance * 0.5, 150); // L'onda si espande fino al 50% della distanza o minimo 150px
+                    const maxSize = distance * 2.5; // L'onda si espande ben oltre il target
                     
                     function animate() {
                         const elapsed = (Date.now() - startTime) / 1000;
                         const progress = Math.min(elapsed / animDuration, 1);
                         
-                        // Posizione corrente (si muove dal punto di partenza al punto di arrivo)
-                        const currentX = x1 + dx * progress;
-                        const currentY = y1 + dy * progress;
+                        // Il centro rimane sempre fisso
+                        wave.style.left = centerX + 'px';
+                        wave.style.top = centerY + 'px';
                         
-                        // Dimensione corrente (si espande radialmente)
+                        // Dimensione corrente (si espande radialmente dal centro)
                         const currentSize = startSize + (maxSize - startSize) * progress;
+                        const currentRadius = currentSize / 2;
                         
-                        wave.style.left = currentX + 'px';
-                        wave.style.top = currentY + 'px';
                         wave.style.width = currentSize + 'px';
                         wave.style.height = currentSize + 'px';
                         
+                        // Controlla se l'onda ha raggiunto il target (per la prima onda)
+                        if (i === 0 && !targetReached && onReachTarget && currentRadius >= distance) {
+                            targetReached = true;
+                            onReachTarget();
+                        }
+                        
                         // Opacità: più alta al centro, si affievolisce man mano che si espande
                         // Le onde più esterne sono leggermente più trasparenti
-                        const baseOpacity = 1 - i * 0.15;
+                        const baseOpacity = 0.9 - i * 0.12;
                         const fadeProgress = progress;
-                        wave.style.opacity = baseOpacity * (1 - fadeProgress * 0.7);
+                        // L'opacità diminuisce più gradualmente per dare un effetto più "ondoso"
+                        const opacity = baseOpacity * (1 - fadeProgress * 0.6);
+                        wave.style.opacity = Math.max(0, opacity);
+                        
+                        // Aggiungi un effetto di pulsazione per rendere l'onda più visibile
+                        const pulse = 1 + Math.sin(elapsed * 8) * 0.05;
+                        wave.style.transform = `translate(-50%, -50%) scale(${pulse})`;
                         
                         if (progress < 1) {
                             requestAnimationFrame(animate);
