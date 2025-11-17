@@ -880,16 +880,16 @@
                                     }
                                 }
                                 
-                                // Quando l'onda riflessa vera raggiunge il radar, appare il primo blip
+                                // Quando l'onda riflessa vera raggiunge il radar, appare il blip più lontano dal centro (blips[1])
                                 createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
-                                    blips[0].classList.add('blip-appear');
+                                    blips[1].classList.add('blip-appear');
                                 });
                                 
                                 // Poco dopo parte anche l'eco finto (simula il sistema di inganno)
                                 setTimeout(() => {
-                                    // Quando l'onda riflessa finta raggiunge il radar, appare il secondo blip
+                                    // Quando l'onda riflessa finta raggiunge il radar, appare il blip più vicino al centro (blips[0])
                                     createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
-                                        blips[1].classList.add('blip-appear');
+                                        blips[0].classList.add('blip-appear');
                                     });
                                 }, 200);
                             }
