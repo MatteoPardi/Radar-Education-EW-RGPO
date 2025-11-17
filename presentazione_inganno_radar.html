@@ -589,6 +589,8 @@
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
         let notesVisible = false;
+        // Salva le posizioni finali dei blip dalla slide 3 per riutilizzarle nella slide 4
+        let slide3BlipPositions = null;
 
         const speakerNotes = [
             {
@@ -706,14 +708,19 @@
                         
                         // Onda outgoing: centro fisso sul radar
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa e appare il blip
-                            createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
+                            // Quando l'onda tocca il target, parte l'onda riflessa
+                            // Il blip appare quando l'onda riflessa raggiunge il radar
                             const blip = slide.querySelector('.radar-blip');
                             if (blip) {
                                 // Posiziona il blip in base alla posizione reale dell'aereo sullo schermo
                                 positionBlipOnScreen(slide, aircraftX, aircraftY, blip);
-                                blip.classList.add('blip-appear');
                             }
+                            createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
+                                // Quando l'onda riflessa raggiunge il radar, appare il blip
+                                if (blip) {
+                                    blip.classList.add('blip-appear');
+                                }
+                            });
                         });
                     }
                 } else if (slideIndex === 2) {
@@ -738,28 +745,16 @@
                         
                         // Usa il target più vicino come riferimento per il callback
                         const nearestTarget = distance1 <= distance2 ? 
-                            {x: aircraft1X, y: aircraft1Y, distance: distance1} : 
-                            {x: aircraft2X, y: aircraft2Y, distance: distance2};
+                            {x: aircraft1X, y: aircraft1Y, distance: distance1, blipIndex: 0} : 
+                            {x: aircraft2X, y: aircraft2Y, distance: distance2, blipIndex: 1};
                         const farthestTarget = distance1 > distance2 ? 
-                            {x: aircraft1X, y: aircraft1Y, distance: distance1} : 
-                            {x: aircraft2X, y: aircraft2Y, distance: distance2};
+                            {x: aircraft1X, y: aircraft1Y, distance: distance1, blipIndex: 0} : 
+                            {x: aircraft2X, y: aircraft2Y, distance: distance2, blipIndex: 1};
                         
                         // Onda outgoing: centro fisso sul radar, si espande e tocca entrambi gli aerei
                         createWave(slide, radarX, radarY, nearestTarget.x, nearestTarget.y, 'outgoing', false, () => {
                             // Quando l'onda tocca il target più vicino, parte l'eco
-                            createWave(slide, nearestTarget.x, nearestTarget.y, radarX, radarY, 'return', false);
-                            
-                            // Se c'è un target più lontano, calcola quando viene toccato
-                            if (farthestTarget.distance > nearestTarget.distance) {
-                                const timeDiff = ((farthestTarget.distance - nearestTarget.distance) / 600) * 1000;
-                                setTimeout(() => {
-                                    createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false);
-                                }, timeDiff);
-                            } else {
-                                // Se sono alla stessa distanza, parte subito
-                                createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false);
-                            }
-                            
+                            // I blip appaiono quando le onde riflesse raggiungono il radar
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
                                 positionBlipOnScreen(slide, aircraft1X, aircraft1Y, blips[0]);
@@ -786,71 +781,190 @@
                                     blips[1].style.top = (blip1Top + newDy) + 'px';
                                 }
                                 
-                                blips.forEach((blip, i) => {
-                                    setTimeout(() => {
-                                        blip.classList.add('blip-appear');
-                                    }, i * 200);
+                                // Salva le posizioni finali dei blip per riutilizzarle nella slide 4
+                                slide3BlipPositions = {
+                                    blip1: {
+                                        left: parseFloat(blips[0].style.left),
+                                        top: parseFloat(blips[0].style.top)
+                                    },
+                                    blip2: {
+                                        left: parseFloat(blips[1].style.left),
+                                        top: parseFloat(blips[1].style.top)
+                                    }
+                                };
+                                
+                                // Quando l'onda riflessa dal target più vicino raggiunge il radar, appare il blip corrispondente
+                                createWave(slide, nearestTarget.x, nearestTarget.y, radarX, radarY, 'return', false, () => {
+                                    blips[nearestTarget.blipIndex].classList.add('blip-appear');
                                 });
+                                
+                                // Se c'è un target più lontano, calcola quando viene toccato
+                                if (farthestTarget.distance > nearestTarget.distance) {
+                                    // L'onda trasmessa impiega timeDiff in più per raggiungere il target più lontano
+                                    const timeDiff = ((farthestTarget.distance - nearestTarget.distance) / 600) * 1000;
+                                    // Quando l'onda trasmessa tocca il target più lontano, parte l'onda riflessa
+                                    setTimeout(() => {
+                                        // Quando l'onda riflessa dal target più lontano raggiunge il radar, appare il blip corrispondente
+                                        createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false, () => {
+                                            blips[farthestTarget.blipIndex].classList.add('blip-appear');
+                                        });
+                                    }, timeDiff);
+                                } else {
+                                    // Se sono alla stessa distanza, parte subito
+                                    createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false, () => {
+                                        blips[farthestTarget.blipIndex].classList.add('blip-appear');
+                                    });
+                                }
                             }
                         });
                     }
                 } else if (slideIndex === 3) {
                     // Slide 4: impulso e due blip (uno finto)
+                    // Per mostrare l'inganno, i blip devono essere posizionati esattamente come nella slide 3
+                    // Simuliamo le stesse posizioni degli aerei della slide 3 per calcolare i blip
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
+                        // Simula le posizioni dei due aerei della slide 3
+                        // Slide 3: aircraft1 a top: 200px, right: 300px; aircraft2 a top: 250px, right: 350px
+                        // Il primo aereo nella slide 4 è già nella stessa posizione del primo della slide 3
+                        const simulatedAircraft1X = aircraftX;
+                        const simulatedAircraft1Y = aircraftY;
+                        
+                        // Calcola la posizione del secondo aereo simulato (come nella slide 3)
+                        // Il secondo aereo è 50px più in basso (Y aumenta) e 50px più a destra (X aumenta)
+                        // rispetto al primo aereo
+                        const simulatedAircraft2X = aircraftX + 50;
+                        const simulatedAircraft2Y = aircraftY + 50;
+                        
                         // Onda outgoing: centro fisso sul radar
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
                             // Quando l'onda tocca il target, parte l'onda riflessa vera
-                            createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
-                            // Poco dopo parte anche l'eco finto (simula il sistema di inganno)
-                            setTimeout(() => {
-                                createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true);
-                            }, 200);
-                            
+                            // I blip appaiono quando le onde riflesse raggiungono il radar
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                positionBlipOnScreen(slide, aircraftX, aircraftY, blips[0]);
-                                // Il secondo blip è leggermente spostato (finto) - separazione maggiore
-                                positionBlipOnScreen(slide, aircraftX + 60, aircraftY + 60, blips[1]);
-                                blips.forEach((blip, i) => {
-                                    setTimeout(() => {
-                                        blip.classList.add('blip-appear');
-                                    }, i * 200);
+                                // Se abbiamo salvato le posizioni dalla slide 3, usale direttamente
+                                // Altrimenti calcolale (per il primo caricamento)
+                                if (slide3BlipPositions) {
+                                    // Usa le posizioni esatte dalla slide 3
+                                    blips[0].style.left = slide3BlipPositions.blip1.left + 'px';
+                                    blips[0].style.top = slide3BlipPositions.blip1.top + 'px';
+                                    blips[1].style.left = slide3BlipPositions.blip2.left + 'px';
+                                    blips[1].style.top = slide3BlipPositions.blip2.top + 'px';
+                                } else {
+                                    // Fallback: calcola le posizioni come nella slide 3
+                                    positionBlipOnScreen(slide, simulatedAircraft1X, simulatedAircraft1Y, blips[0]);
+                                    positionBlipOnScreen(slide, simulatedAircraft2X, simulatedAircraft2Y, blips[1]);
+                                    
+                                    // Applica la stessa logica di separazione della slide 3
+                                    const blip1Left = parseFloat(blips[0].style.left);
+                                    const blip1Top = parseFloat(blips[0].style.top);
+                                    const blip2Left = parseFloat(blips[1].style.left);
+                                    const blip2Top = parseFloat(blips[1].style.top);
+                                    
+                                    const dx = blip2Left - blip1Left;
+                                    const dy = blip2Top - blip1Top;
+                                    const distance = Math.sqrt(dx * dx + dy * dy);
+                                    
+                                    // Se i blip sono troppo vicini, aumenta la separazione (come nella slide 3)
+                                    const minSeparation = 50; // separazione minima in pixel
+                                    if (distance < minSeparation && distance > 0) {
+                                        const scale = minSeparation / distance;
+                                        const newDx = dx * scale;
+                                        const newDy = dy * scale;
+                                        // Sposta il secondo blip più lontano dal primo
+                                        blips[1].style.left = (blip1Left + newDx) + 'px';
+                                        blips[1].style.top = (blip1Top + newDy) + 'px';
+                                    }
+                                }
+                                
+                                // Quando l'onda riflessa vera raggiunge il radar, appare il primo blip
+                                createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
+                                    blips[0].classList.add('blip-appear');
                                 });
+                                
+                                // Poco dopo parte anche l'eco finto (simula il sistema di inganno)
+                                setTimeout(() => {
+                                    // Quando l'onda riflessa finta raggiunge il radar, appare il secondo blip
+                                    createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
+                                        blips[1].classList.add('blip-appear');
+                                    });
+                                }, 200);
                             }
                         });
                     }
                 } else if (slideIndex === 4) {
                     // Slide 5: RGPO - blip che si muove
+                    // Il blip finto deve partire dalla stessa posizione della slide 3 e 4
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
+                        // Simula le posizioni dei due aerei come nella slide 3/4 per calcolare le posizioni iniziali dei blip
+                        const simulatedAircraft1X = aircraftX;
+                        const simulatedAircraft1Y = aircraftY;
+                        const simulatedAircraft2X = aircraftX + 50;
+                        const simulatedAircraft2Y = aircraftY + 50;
+                        
                         // Onda outgoing: centro fisso sul radar
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
                             // Quando l'onda tocca il target, parte l'onda riflessa
-                            createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false);
-                            
+                            // I blip appaiono quando l'onda riflessa raggiunge il radar
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                positionBlipOnScreen(slide, aircraftX, aircraftY, blips[0]);
-                                // Il secondo blip parte leggermente separato (finto, poi si muove)
-                                positionBlipOnScreen(slide, aircraftX + 40, aircraftY + 30, blips[1]);
-                                // Blip reale (primo)
-                                blips[0].classList.add('blip-appear', 'blip-real');
-                                setTimeout(() => {
-                                    // Blip finto (secondo) che si muove
-                                    blips[1].classList.add('blip-appear');
+                                // Se abbiamo salvato le posizioni dalla slide 3, usale direttamente
+                                // Altrimenti calcolale (per il primo caricamento)
+                                if (slide3BlipPositions) {
+                                    // Usa le posizioni esatte dalla slide 3
+                                    blips[0].style.left = slide3BlipPositions.blip1.left + 'px';
+                                    blips[0].style.top = slide3BlipPositions.blip1.top + 'px';
+                                    blips[1].style.left = slide3BlipPositions.blip2.left + 'px';
+                                    blips[1].style.top = slide3BlipPositions.blip2.top + 'px';
+                                } else {
+                                    // Fallback: calcola le posizioni come nella slide 3
+                                    positionBlipOnScreen(slide, simulatedAircraft1X, simulatedAircraft1Y, blips[0]);
+                                    positionBlipOnScreen(slide, simulatedAircraft2X, simulatedAircraft2Y, blips[1]);
+                                    
+                                    // Applica la stessa logica di separazione della slide 3
+                                    const blip1Left = parseFloat(blips[0].style.left);
+                                    const blip1Top = parseFloat(blips[0].style.top);
+                                    const blip2Left = parseFloat(blips[1].style.left);
+                                    const blip2Top = parseFloat(blips[1].style.top);
+                                    
+                                    const dx = blip2Left - blip1Left;
+                                    const dy = blip2Top - blip1Top;
+                                    const distance = Math.sqrt(dx * dx + dy * dy);
+                                    
+                                    // Se i blip sono troppo vicini, aumenta la separazione (come nella slide 3)
+                                    const minSeparation = 50; // separazione minima in pixel
+                                    if (distance < minSeparation && distance > 0) {
+                                        const scale = minSeparation / distance;
+                                        const newDx = dx * scale;
+                                        const newDy = dy * scale;
+                                        // Sposta il secondo blip più lontano dal primo
+                                        blips[1].style.left = (blip1Left + newDx) + 'px';
+                                        blips[1].style.top = (blip1Top + newDy) + 'px';
+                                    }
+                                }
+                                
+                                // Quando l'onda riflessa raggiunge il radar, appare il blip reale
+                                createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
+                                    // Blip reale (primo)
+                                    blips[0].classList.add('blip-appear', 'blip-real');
+                                    
+                                    // Poco dopo appare il blip finto (secondo) che si muove
                                     setTimeout(() => {
-                                        blips[1].classList.add('blip-moving');
-                                        // Crea traccia del movimento
-                                        createBlipTrail(slide, blips[1]);
-                                    }, 500);
-                                }, 300);
+                                        blips[1].classList.add('blip-appear');
+                                        setTimeout(() => {
+                                            blips[1].classList.add('blip-moving');
+                                            // Crea traccia del movimento
+                                            createBlipTrail(slide, blips[1]);
+                                        }, 500);
+                                    }, 300);
+                                });
                             }
                         });
                     }
