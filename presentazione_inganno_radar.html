@@ -911,7 +911,8 @@
             
             // Velocità costante: calcola il tempo in base alla distanza
             // Assumiamo una velocità di 600px/s per l'animazione (velocità della luce simulata)
-            const animDuration = Math.max(1.0, Math.min(distance / 600, 3.0)); // tra 1.0 e 3.0 secondi
+            const waveSpeed = 600; // pixel al secondo
+            const animDuration = distance / waveSpeed;
             
             // Crea più onde concentriche per mostrare la propagazione sferica
             const numWaves = 5; // Numero di onde concentriche
@@ -931,6 +932,7 @@
                     wave.style.left = centerX + 'px';
                     wave.style.top = centerY + 'px';
                     const startSize = 20 + i * 15; // Ogni onda parte leggermente più grande
+                    const startRadius = startSize / 2;
                     wave.style.width = startSize + 'px';
                     wave.style.height = startSize + 'px';
                     
@@ -938,19 +940,19 @@
                     
                     // Anima l'espansione dell'onda (centro fisso, si espande radialmente)
                     let startTime = Date.now();
-                    const maxSize = distance * 2.5; // L'onda si espande ben oltre il target
+                    const maxRadius = distance * 1.5; // L'onda si espande ben oltre il target
                     
                     function animate() {
                         const elapsed = (Date.now() - startTime) / 1000;
-                        const progress = Math.min(elapsed / animDuration, 1);
                         
                         // Il centro rimane sempre fisso
                         wave.style.left = centerX + 'px';
                         wave.style.top = centerY + 'px';
                         
-                        // Dimensione corrente (si espande radialmente dal centro)
-                        const currentSize = startSize + (maxSize - startSize) * progress;
-                        const currentRadius = currentSize / 2;
+                        // Crescita lineare del raggio: r(t) = r0 + v*t (velocità costante)
+                        const currentRadius = startRadius + waveSpeed * elapsed;
+                        const currentSize = currentRadius * 2;
+                        const progress = Math.min((currentRadius - startRadius) / (maxRadius - startRadius), 1);
                         
                         wave.style.width = currentSize + 'px';
                         wave.style.height = currentSize + 'px';
@@ -964,16 +966,16 @@
                         // Opacità: più alta al centro, si affievolisce man mano che si espande
                         // Le onde più esterne sono leggermente più trasparenti
                         const baseOpacity = 0.9 - i * 0.12;
-                        const fadeProgress = progress;
                         // L'opacità diminuisce più gradualmente per dare un effetto più "ondoso"
-                        const opacity = baseOpacity * (1 - fadeProgress * 0.6);
+                        const opacity = baseOpacity * (1 - progress * 0.6);
                         wave.style.opacity = Math.max(0, opacity);
                         
-                        // Aggiungi un effetto di pulsazione per rendere l'onda più visibile
-                        const pulse = 1 + Math.sin(elapsed * 8) * 0.05;
-                        wave.style.transform = `translate(-50%, -50%) scale(${pulse})`;
+                        // Trasformazione fissa: solo traslazione per centrare l'onda
+                        // Nessun effetto di scala variabile per mantenere velocità costante
+                        wave.style.transform = `translate(-50%, -50%)`;
                         
-                        if (progress < 1) {
+                        // Continua l'animazione finché il raggio non supera il massimo
+                        if (currentRadius < maxRadius) {
                             requestAnimationFrame(animate);
                         } else {
                             wave.remove();
