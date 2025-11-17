@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inganno Radar - Guerra Elettronica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            padding: 60px;
+            background: linear-gradient(180deg, #0a0e27 0%, #050810 50%, #0a0e27 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-title {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 1.8em;
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .bullet-points {
+            list-style: none;
+            font-size: 1.5em;
+            line-height: 1.8;
+            color: #e0e0e0;
+            max-width: 800px;
+        }
+
+        .bullet-points li {
+            margin: 20px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .bullet-points li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .visual-area {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            flex: 1;
+        }
+
+        /* Radar stilizzato */
+        .radar-station {
+            position: absolute;
+            bottom: 100px;
+            left: 150px;
+            width: 120px;
+            height: 120px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 0.5s forwards;
+        }
+
+        .radar-base {
+            width: 80px;
+            height: 80px;
+            background: #1a1a2e;
+            border: 3px solid #00ffff;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px #00ffff, inset 0 0 20px #00ffff;
+        }
+
+        .radar-dish {
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #2a2a4e, #1a1a2e);
+            border: 2px solid #00ffff;
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            transform-origin: center bottom;
+            animation: rotateRadar 4s linear infinite;
+        }
+
+        @keyframes rotateRadar {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Aereo stilizzato */
+        .aircraft {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 1s forwards;
+        }
+
+        .aircraft-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3a3a5e, #2a2a4e);
+            clip-path: polygon(0% 50%, 20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%);
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        /* Impulso radar */
+        .radar-pulse {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #00ffff, #0088ff);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px rgba(0, 255, 255, 0.5);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .pulse-outgoing {
+            animation: pulseOut 2s ease-out forwards;
+        }
+
+        .pulse-return {
+            background: radial-gradient(circle, #00ff88, #00cc66);
+            box-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px rgba(0, 255, 136, 0.5);
+            animation: pulseReturn 2s ease-out forwards;
+        }
+
+        .pulse-return.fake {
+            background: radial-gradient(circle, #ffaa00, #ff8800);
+            box-shadow: 0 0 20px #ffaa00, 0 0 40px #ffaa00, 0 0 60px rgba(255, 170, 0, 0.5);
+        }
+
+        @keyframes pulseOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        @keyframes pulseReturn {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        /* Schermo radar circolare */
+        .radar-screen {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border: 4px solid #00ff88;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+            box-shadow: 0 0 30px #00ff88, inset 0 0 50px rgba(0, 255, 136, 0.2);
+            bottom: 50px;
+            right: 100px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 2s forwards;
+        }
+
+        .radar-sweep {
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            top: 50%;
+            left: 50%;
+            transform-origin: left center;
+            opacity: 0;
+            animation: sweepRadar 3s linear 2.5s infinite;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        @keyframes sweepRadar {
+            0% {
+                transform: rotate(0deg);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(360deg);
+                opacity: 0.8;
+            }
+        }
+
+        /* Pallino su schermo radar */
+        .radar-blip {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ff88, 0 0 30px #00ff88;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .blip-appear {
+            animation: blipAppear 0.5s ease-out forwards;
+        }
+
+        @keyframes blipAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Navigazione */
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 20px #00ff88;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            font-size: 1.2em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        /* Note oratore */
+        .speaker-notes {
+            position: fixed;
+            bottom: 100px;
+            left: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 999;
+        }
+
+        .speaker-notes.show {
+            opacity: 1;
+        }
+
+        .speaker-notes h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .toggle-notes {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9em;
+            z-index: 1001;
+        }
+
+        .toggle-notes:hover {
+            background: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Slide specifiche */
+        .slide-1 .aircraft {
+            top: 150px;
+            right: 200px;
+        }
+
+        .slide-2 .aircraft {
+            top: 200px;
+            right: 300px;
+        }
+
+        .slide-3 .aircraft {
+            top: 200px;
+            right: 300px;
+        }
+
+        .slide-3 .aircraft.second {
+            top: 250px;
+            right: 350px;
+        }
+
+        .slide-4 .aircraft {
+            top: 200px;
+            right: 300px;
+        }
+
+        .slide-4 .aircraft.enemy {
+            border-color: #ff4444;
+            box-shadow: 0 0 15px #ff4444;
+        }
+
+        .slide-5 .aircraft {
+            top: 200px;
+            right: 300px;
+        }
+
+        /* Animazioni per RGPO */
+        .blip-moving {
+            animation: blipMove 5s ease-out forwards;
+        }
+
+        @keyframes blipMove {
+            0% {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(180px, -120px);
+                opacity: 0.7;
+            }
+        }
+
+        .blip-trail {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 255, 136, 0.4);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+            animation: trailFade 3s ease-out forwards;
+        }
+
+        @keyframes trailFade {
+            0% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .blip-real {
+            animation: blipPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes blipPulse {
+            0%, 100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Titolo & gancio -->
+        <div class="slide slide-1 active">
+            <h1 class="slide-title">Come fa un radar a vedere gli aerei?</h1>
+            <h2 class="slide-subtitle">Dai lampi invisibili agli inganni elettronici</h2>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>Il radar è come un "occhio" che usa onde radio</li>
+                    <li>Manda impulsi invisibili e ascolta gli echi</li>
+                    <li>Da qui inizia la guerra elettronica…</li>
+                </ul>
+                <div class="visual-area">
+                    <div class="radar-station">
+                        <div class="radar-base">
+                            <div class="radar-dish"></div>
+                        </div>
+                    </div>
+                    <div class="aircraft">
+                        <div class="aircraft-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Un aereo, un pallino -->
+        <div class="slide slide-2">
+            <h1 class="slide-title">Un bersaglio: un pallino sullo schermo</h1>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>L'impulso radar parte, rimbalza su un aereo e torna</li>
+                    <li>Il radar misura il tempo di ritorno</li>
+                    <li>Sul display: un solo pallino luminoso</li>
+                </ul>
+                <div class="visual-area">
+                    <div class="radar-station">
+                        <div class="radar-base">
+                            <div class="radar-dish"></div>
+                        </div>
+                    </div>
+                    <div class="aircraft">
+                        <div class="aircraft-body"></div>
+                    </div>
+                    <div class="radar-screen">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Due aerei, due pallini -->
+        <div class="slide slide-3">
+            <h1 class="slide-title">Due aerei, due echi, due pallini</h1>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>L'onda trasmessa è una sola</li>
+                    <li>Ma rimbalza su due aerei vicini</li>
+                    <li>Il radar riceve due echi a tempi diversi</li>
+                </ul>
+                <div class="visual-area">
+                    <div class="radar-station">
+                        <div class="radar-base">
+                            <div class="radar-dish"></div>
+                        </div>
+                    </div>
+                    <div class="aircraft">
+                        <div class="aircraft-body"></div>
+                    </div>
+                    <div class="aircraft second">
+                        <div class="aircraft-body"></div>
+                    </div>
+                    <div class="radar-screen">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
+                        <div class="radar-blip" style="top: 65%; left: 72%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Inganno radar -->
+        <div class="slide slide-4">
+            <h1 class="slide-title">Inganno radar: un solo aereo che sembra due</h1>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>L'aereo sa di essere illuminato dal radar</li>
+                    <li>Ha un proprio trasmettitore a bordo</li>
+                    <li>Imita il segnale riflesso di un "finto vicino"</li>
+                </ul>
+                <div class="visual-area">
+                    <div class="radar-station">
+                        <div class="radar-base">
+                            <div class="radar-dish"></div>
+                        </div>
+                    </div>
+                    <div class="aircraft enemy">
+                        <div class="aircraft-body"></div>
+                    </div>
+                    <div class="radar-screen">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
+                        <div class="radar-blip" style="top: 65%; left: 72%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: RGPO -->
+        <div class="slide slide-5">
+            <h1 class="slide-title">RGPO: far scappare un bersaglio fantasma</h1>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>Il pallino finto inizia vicino a quello vero</li>
+                    <li>Poi, impulso dopo impulso, viene spostato sempre più lontano</li>
+                    <li>Il radar può inseguire il fantasma e perdere quello vero</li>
+                </ul>
+                <div class="visual-area">
+                    <div class="radar-station">
+                        <div class="radar-base">
+                            <div class="radar-dish"></div>
+                        </div>
+                    </div>
+                    <div class="aircraft enemy">
+                        <div class="aircraft-body"></div>
+                    </div>
+                    <div class="radar-screen">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-blip" style="top: 60%; left: 70%;"></div>
+                        <div class="radar-blip blip-moving" style="top: 60%; left: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="toggle-notes" onclick="toggleNotes()">Mostra Note</button>
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / 5
+    </div>
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="previousSlide()">← Precedente</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()">Successiva →</button>
+    </div>
+    <div class="speaker-notes" id="speaker-notes"></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let notesVisible = false;
+
+        const speakerNotes = [
+            {
+                title: "Slide 1: Come fa un radar a vedere gli aerei?",
+                text: "Spiega a voce che il radar è uno strumento che 'sente' l'ambiente intorno usando impulsi elettromagnetici, come se fossero piccoli pacchetti di energia lanciati nello spazio. Questi impulsi rimbalzano sugli oggetti (ad esempio un aereo) e tornano indietro. Analizzando quanto tempo impiegano a tornare, il radar capisce a che distanza si trova l'oggetto. Non entrare in formule: sottolinea solo la metafora dell''occhio' che lancia lampi invisibili e ascolta gli echi."
+            },
+            {
+                title: "Slide 2: Un bersaglio: un pallino sullo schermo",
+                text: "Spiega che l'operatore non vede l'aereo, vede solo un punto su uno schermo. Il punto rappresenta 'qualcosa' che ha riflettuto l'onda: può essere un aereo, una nave, un drone, ecc. Il tempo di andata e ritorno dell'impulso permette di calcolare la distanza (ma non fare formule, basta il concetto). Questo concetto sarà importante quando parlerai di inganno: il radar si fida di quel pallino."
+            },
+            {
+                title: "Slide 3: Due aerei, due echi, due pallini",
+                text: "Spiega che il radar invia una sola 'pallottola di energia', ma se ci sono più oggetti, questa rimbalza su tutti. Poiché gli aerei sono a distanze leggermente diverse, i due echi tornano al radar in momenti leggermente diversi. Il radar è in grado di 'separare' questi due echi nel tempo e quindi li mostra come due pallini. Sottolinea che questo è lo scenario 'onesto': due aerei veri → due punti veri sullo schermo."
+            },
+            {
+                title: "Slide 4: Inganno radar: un solo aereo che sembra due",
+                text: "Spiega che il caccia è equipaggiato con un sistema di guerra elettronica. Appena 'sente' di essere illuminato dal radar (riceve gli impulsi), reagisce e comincia a trasmettere dei falsi echi, cioè segnali che imitano quelli riflessi da un bersaglio reale. Da fuori, il radar crede di vedere due aerei: quello vero e quello finto creato dal segnale ingannatore. Questo è il cuore dell'inganno radar: sfruttare il fatto che il radar si fida di ciò che riceve come eco."
+            },
+            {
+                title: "Slide 5: RGPO: far scappare un bersaglio fantasma",
+                text: "Spiega che l'RGPO è una tecnica di inganno in cui il caccia: prima crea un eco finto molto vicino a quello vero, così che il radar lo 'agganci'. Poi, poco alla volta, ritarda sempre di più questo falso eco, simulando un bersaglio che si allontana. Il radar, inseguendo questo bersaglio fantasma, può spostare la sua attenzione (e le sue misure di distanza) sul pallino sbagliato. Nel frattempo, il bersaglio vero può cambiare rotta, avvicinarsi o fuggire, mentre il sistema che lo controlla guarda dal lato opposto. Concludi collegando: questo è un esempio di guerra elettronica, dove non si distrugge il radar, ma si inganna la sua percezione della realtà."
+            }
+        ];
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            updateNavigation();
+            updateNotes();
+            animateSlide(currentSlide);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function updateNavigation() {
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function toggleNotes() {
+            notesVisible = !notesVisible;
+            const notesDiv = document.getElementById('speaker-notes');
+            if (notesVisible) {
+                notesDiv.classList.add('show');
+            } else {
+                notesDiv.classList.remove('show');
+            }
+        }
+
+        function updateNotes() {
+            const notesDiv = document.getElementById('speaker-notes');
+            if (notesVisible && speakerNotes[currentSlide]) {
+                notesDiv.innerHTML = `<h4>${speakerNotes[currentSlide].title}</h4><p>${speakerNotes[currentSlide].text}</p>`;
+            }
+        }
+
+        function animateSlide(slideIndex) {
+            const slide = slides[slideIndex];
+            
+            // Reset animazioni
+            const pulses = slide.querySelectorAll('.radar-pulse');
+            pulses.forEach(p => p.remove());
+            
+            const blips = slide.querySelectorAll('.radar-blip');
+            blips.forEach(blip => {
+                blip.classList.remove('blip-appear', 'blip-moving');
+            });
+
+            // Animazioni specifiche per slide
+            setTimeout(() => {
+                if (slideIndex === 0) {
+                    // Slide 1: impulso dal radar all'aereo
+                    createPulse(slide, 210, 660, 1100, 390, 'outgoing');
+                    setTimeout(() => {
+                        createPulse(slide, 1100, 390, 210, 660, 'return');
+                    }, 1000);
+                } else if (slideIndex === 1) {
+                    // Slide 2: impulso e blip
+                    createPulse(slide, 210, 660, 1100, 440, 'outgoing');
+                    setTimeout(() => {
+                        createPulse(slide, 1100, 440, 210, 660, 'return');
+                        const blip = slide.querySelector('.radar-blip');
+                        if (blip) blip.classList.add('blip-appear');
+                    }, 1000);
+                } else if (slideIndex === 2) {
+                    // Slide 3: impulso a due aerei, due blip
+                    createPulse(slide, 210, 660, 1100, 440, 'outgoing');
+                    setTimeout(() => {
+                        createPulse(slide, 1100, 440, 210, 660, 'return');
+                        createPulse(slide, 1150, 490, 210, 660, 'return');
+                        const blips = slide.querySelectorAll('.radar-blip');
+                        blips.forEach((blip, i) => {
+                            setTimeout(() => {
+                                blip.classList.add('blip-appear');
+                            }, i * 200);
+                        });
+                    }, 1000);
+                } else if (slideIndex === 3) {
+                    // Slide 4: impulso e due blip (uno finto)
+                    createPulse(slide, 210, 660, 1100, 440, 'outgoing');
+                    setTimeout(() => {
+                        createPulse(slide, 1100, 440, 210, 660, 'return', false);
+                        setTimeout(() => {
+                            createPulse(slide, 1100, 440, 210, 660, 'return', true);
+                        }, 100);
+                        const blips = slide.querySelectorAll('.radar-blip');
+                        blips.forEach((blip, i) => {
+                            setTimeout(() => {
+                                blip.classList.add('blip-appear');
+                            }, i * 200);
+                        });
+                    }, 1000);
+                } else if (slideIndex === 4) {
+                    // Slide 5: RGPO - blip che si muove
+                    createPulse(slide, 210, 660, 1100, 440, 'outgoing');
+                    setTimeout(() => {
+                        createPulse(slide, 1100, 440, 210, 660, 'return');
+                        const blips = slide.querySelectorAll('.radar-blip');
+                        // Blip reale (primo)
+                        blips[0].classList.add('blip-appear', 'blip-real');
+                        setTimeout(() => {
+                            // Blip finto (secondo) che si muove
+                            blips[1].classList.add('blip-appear');
+                            setTimeout(() => {
+                                blips[1].classList.add('blip-moving');
+                                // Crea traccia del movimento
+                                createBlipTrail(slide, blips[1]);
+                            }, 500);
+                        }, 300);
+                    }, 1000);
+                }
+            }, 500);
+        }
+
+        function createPulse(slide, x1, y1, x2, y2, type, isFake = false) {
+            const pulse = document.createElement('div');
+            pulse.className = `radar-pulse pulse-${type}`;
+            if (isFake) {
+                pulse.classList.add('fake');
+            }
+            pulse.style.left = x1 + 'px';
+            pulse.style.top = y1 + 'px';
+            
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            pulse.style.width = '12px';
+            pulse.style.height = '12px';
+            pulse.style.transition = `all 2s linear`;
+            
+            slide.querySelector('.visual-area').appendChild(pulse);
+            
+            setTimeout(() => {
+                pulse.style.left = x2 + 'px';
+                pulse.style.top = y2 + 'px';
+            }, 10);
+            
+            setTimeout(() => {
+                pulse.remove();
+            }, 2000);
+        }
+
+        function createBlipTrail(slide, blip) {
+            const screen = slide.querySelector('.radar-screen');
+            if (!screen) return;
+            
+            const screenRect = screen.getBoundingClientRect();
+            const blipRect = blip.getBoundingClientRect();
+            
+            const startX = blipRect.left - screenRect.left + blipRect.width / 2;
+            const startY = blipRect.top - screenRect.top + blipRect.height / 2;
+            
+            // Crea alcuni punti di traccia
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const trail = document.createElement('div');
+                    trail.className = 'blip-trail';
+                    const offsetX = (i * 36); // 180px / 5
+                    const offsetY = -(i * 24); // 120px / 5
+                    trail.style.left = (startX + offsetX) + 'px';
+                    trail.style.top = (startY + offsetY) + 'px';
+                    screen.appendChild(trail);
+                    
+                    setTimeout(() => {
+                        trail.remove();
+                    }, 3000);
+                }, i * 400);
+            }
+        }
+
+        // Navigazione da tastiera
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            } else if (e.key === 'n' || e.key === 'N') {
+                toggleNotes();
+            }
+        });
+
+        // Inizializza
+        updateNavigation();
+        animateSlide(0);
+    </script>
+</body>
+</html>
