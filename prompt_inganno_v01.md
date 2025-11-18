@@ -242,7 +242,7 @@ Spiega a voce che:
 
 ---
 
-## Riepilogo richieste tecniche per genspark.ai
+## Riepilogo richieste tecniche per l'agente AI
 
 1. **Crea una presentazione di 5 slide** in italiano, seguendo esattamente la struttura sopra descritta (titoli, bullet point brevi, visual e animazioni).
 2. Mantieni uno **stile grafico coerente** tra le slide: tema radar/aeronautica, sfondo scuro, impulsi luminosi, schermo radar circolare.
