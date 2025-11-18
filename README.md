@@ -2,6 +2,8 @@
 
 Mini presentazione interattiva HTML per spiegare a studenti di liceo (16-18 anni) i concetti di **radar**, **guerra elettronica** e **inganni elettromagnetici**, attraverso un esempio semplificato e divulgativo di **RGPO (Range Gate Pull-Off)**.
 
+Disponibile online all'indirizzo: https://matteopardi.github.io/Radar-Education-EW-RGPO/
+
 ## 🎯 Scopo
 
 Presentazione didattica a schermo intero che illustra in modo intuitivo:
@@ -12,7 +14,7 @@ Presentazione didattica a schermo intero che illustra in modo intuitivo:
 
 ## 🚀 Utilizzo
 
-Aprire `index.html` in un browser moderno. La presentazione è completamente standalone (nessuna dipendenza esterna).
+Aprire `index.html` in un browser moderno. La presentazione è completamente standalone (nessuna dipendenza esterna). È disponibile anche online all'indirizzo citato in alto.
 
 ## 📋 Contenuti
 
