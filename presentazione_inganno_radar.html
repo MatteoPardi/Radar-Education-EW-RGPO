@@ -698,11 +698,14 @@
             // Piccolo delay prima di ripartire (simula il tempo tra impulsi)
             // Solo se siamo ancora sulla stessa slide
             if (slideIndex === currentSlide) {
+                // Per la slide 5 (RGPO), usiamo un intervallo molto più rapido (delay = 0)
+                // Per le altre slide, manteniamo 300ms
+                const delay = slideIndex === 4 ? 0 : 300;
                 const timeout = setTimeout(() => {
                     if (slideIndex === currentSlide) {
                         animateSlide(slideIndex);
                     }
-                }, 300);
+                }, delay);
                 animationTimeouts.push(timeout);
             }
         }
@@ -722,6 +725,8 @@
             
             // Rimuovi i pallini con un delay per aumentare la persistenza visiva
             // Il delay permette ai pallini di rimanere visibili più a lungo
+            // Per la slide 5 (RGPO), riduciamo la persistenza per adattarla al ritmo più rapido
+            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 600ms per slide 5, 1500ms per le altre
             const blipRemovalTimeout = setTimeout(() => {
                 // Verifica che siamo ancora sulla stessa slide prima di rimuovere i pallini
                 if (slideIndex === currentSlide) {
@@ -736,7 +741,7 @@
                         }, 1000); // Tempo dell'animazione fade-out
                     });
                 }
-            }, 1500); // Delay di 1500ms prima di iniziare il fade-out (aumentato da 0ms)
+            }, persistenceDelay);
             animationTimeouts.push(blipRemovalTimeout);
 
             // Animazioni specifiche per slide
@@ -922,39 +927,67 @@
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        // Onda outgoing: centro fisso sul radar
+                        // Calcola la distanza per determinare il tempo di propagazione
+                        const dx = aircraftX - radarX;
+                        const dy = aircraftY - radarY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Velocità delle onde per la slide 5 (più veloce per impulsi più frequenti)
+                        const waveSpeed = 6000; // pixel al secondo (aumentato per ritmo più rapido)
+                        const propagationTime = (distance / waveSpeed) * 1000; // tempo in ms
+                        
+                        // Onda outgoing: centro fisso sul radar (usa velocità personalizzata)
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa
-                            // I blip appaiono quando l'onda riflessa raggiunge il radar
+                            // Quando l'onda tocca il target, parte l'onda riflessa vera
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                // Quando l'onda riflessa raggiunge il radar, appare il blip reale
+                                // Traccia quando tutte le onde riflesse sono tornate per ripartire l'animazione
+                                let returnWavesCount = 0;
+                                const totalReturnWaves = 2;
+                                
+                                // Quando l'onda riflessa vera raggiunge il radar, appare il blip reale (usa velocità personalizzata)
                                 createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
-                                    // Blip reale (primo)
+                                    // Blip reale (primo) - appare quando l'onda vera arriva
                                     blips[0].classList.add('blip-appear', 'blip-real');
+                                    returnWavesCount++;
                                     
-                                    // Poco dopo appare il blip finto (secondo) che si muove
-                                    setTimeout(() => {
+                                    // Se tutte le onde sono tornate, riparte l'animazione
+                                    if (returnWavesCount === totalReturnWaves) {
+                                        restartAnimation(slideIndex);
+                                    }
+                                }, waveSpeed);
+                                
+                                // L'onda finta parte dall'aereo quando viene illuminato (simula il sistema di inganno)
+                                // L'onda finta ha un leggero ritardo per simulare il tempo di elaborazione del sistema
+                                setTimeout(() => {
+                                    // Quando l'onda finta raggiunge il radar, appare il blip finto (usa velocità personalizzata)
+                                    createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
+                                        // Blip finto (secondo) - appare quando l'onda finta arriva (sincronizzato)
                                         blips[1].classList.add('blip-appear');
+                                        returnWavesCount++;
+                                        
+                                        // Dopo un breve delay, inizia il movimento RGPO
                                         setTimeout(() => {
                                             blips[1].classList.add('blip-moving');
                                             // Crea traccia del movimento
                                             createBlipTrail(slide, blips[1]);
-                                        }, 500);
-                                    }, 300);
-                                    
-                                    // Riparte l'animazione dopo che l'onda riflessa è tornata
-                                    restartAnimation(slideIndex);
-                                });
+                                        }, 200);
+                                        
+                                        // Se tutte le onde sono tornate, riparte l'animazione
+                                        if (returnWavesCount === totalReturnWaves) {
+                                            restartAnimation(slideIndex);
+                                        }
+                                    }, waveSpeed);
+                                }, 50); // Piccolo delay per simulare il tempo di reazione del sistema di inganno
                             }
-                        });
+                        }, waveSpeed);
                     }
                 }
             }, 500);
             animationTimeouts.push(initialTimeout);
         }
 
-        function createWave(slide, centerX, centerY, targetX, targetY, type, isFake = false, onReachTarget = null) {
+        function createWave(slide, centerX, centerY, targetX, targetY, type, isFake = false, onReachTarget = null, customWaveSpeed = null) {
             const visualArea = slide.querySelector('.visual-area');
             if (!visualArea) return;
             
@@ -963,7 +996,8 @@
             const distance = Math.sqrt(dx * dx + dy * dy);
             
             // Velocità aumentata per dare l'idea della velocità della luce
-            const waveSpeed = 1800; // pixel al secondo (aumentato da 600)
+            // Se non specificata, usa la velocità di default
+            const waveSpeed = customWaveSpeed || 1800; // pixel al secondo (default: 1800)
             
             // Crea una singola onda
             const wave = document.createElement('div');
