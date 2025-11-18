@@ -94,7 +94,7 @@
             flex: 1;
         }
 
-        /* Radar stilizzato */
+        /* Radar station */
         .radar-station {
             position: absolute;
             bottom: 100px;
@@ -133,7 +133,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Aereo stilizzato */
+        /* Aircraft */
         .aircraft {
             position: absolute;
             width: 300px;
@@ -153,7 +153,7 @@
             filter: drop-shadow(0 0 15px #ff4444) sepia(100%) saturate(200%) hue-rotate(0deg) brightness(1.1);
         }
 
-        /* Onda radar sferica */
+        /* Radar wave (spherical) */
         .radar-wave {
             position: absolute;
             border-radius: 50%;
@@ -180,7 +180,7 @@
             box-shadow: 0 0 15px #ffaa00, 0 0 30px rgba(255, 170, 0, 0.5);
         }
 
-        /* Gradiente interno che rappresenta l'energia */
+        /* Internal gradient representing wave energy */
         .wave-fill {
             position: absolute;
             top: 0;
@@ -203,7 +203,7 @@
             background: radial-gradient(circle, rgba(255, 170, 0, 0.6) 0%, rgba(255, 170, 0, 0.3) 40%, rgba(255, 170, 0, 0.1) 70%, transparent 100%);
         }
 
-        /* Schermo radar circolare */
+        /* Circular radar screen */
         .radar-screen {
             position: absolute;
             width: 400px;
@@ -245,7 +245,7 @@
             }
         }
 
-        /* Pallino su schermo radar */
+        /* Blip on radar screen */
         .radar-blip {
             position: absolute;
             width: 12px;
@@ -288,7 +288,7 @@
             }
         }
 
-        /* Navigazione */
+        /* Navigation */
         .navigation {
             position: fixed;
             bottom: 30px;
@@ -330,60 +330,13 @@
             text-shadow: 0 0 10px #00ffff;
         }
 
-        /* Note oratore */
-        .speaker-notes {
-            position: fixed;
-            bottom: 100px;
-            left: 30px;
-            right: 30px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00ffff;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 1em;
-            line-height: 1.6;
-            max-height: 150px;
-            overflow-y: auto;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 999;
-        }
-
-        .speaker-notes.show {
-            opacity: 1;
-        }
-
-        .speaker-notes h4 {
-            color: #00ffff;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #00ffff;
-        }
-
-        .toggle-notes {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            padding: 10px 20px;
-            background: rgba(0, 255, 255, 0.2);
-            border: 2px solid #00ffff;
-            color: #00ffff;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 0.9em;
-            z-index: 1001;
-        }
-
-        .toggle-notes:hover {
-            background: rgba(0, 255, 255, 0.4);
-            box-shadow: 0 0 15px #00ffff;
-        }
 
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        /* Slide specifiche */
+        /* Slide-specific aircraft positioning */
         .slide-1 .aircraft {
             top: 200px;
             right: 700px;
@@ -414,7 +367,7 @@
             right: 700px;
         }
 
-        /* Animazioni per RGPO */
+        /* RGPO animations */
         .blip-moving {
             animation: blipMove 5s ease-out forwards;
         }
@@ -428,11 +381,7 @@
                 opacity: 0.9;
             }
             100% {
-                /* Posizione finale calcolata per rimanere dentro il display (raggio ~190px) */
-                /* Posizione iniziale: (120px, -48px) rispetto al centro del display */
-                /* Direzione originale: (180px, -120px) -> angolo ≈ -33.7° */
-                /* Posizione finale limitata a 190px dal centro: (165.7px, -92.8px) */
-                /* Nuovo translate: (45.7px, -44.8px) ≈ (46px, -45px) */
+                /* Final position calculated to stay within display (radius ~190px) */
                 transform: translate(46px, -45px);
                 opacity: 0.7;
             }
@@ -475,10 +424,10 @@
 </head>
 <body>
     <div class="presentation-container">
-        <!-- Slide 1: Titolo & gancio -->
+        <!-- Slide 1: Introduction -->
         <div class="slide slide-1 active">
             <h1 class="slide-title">Come fa un radar a vedere gli aerei?</h1>
-            <h2 class="slide-subtitle">Dai lampi invisibili agli inganni elettronici</h2>
+            <h2 class="slide-subtitle">Inganni elettromagnetici e guerra elettronica</h2>
             <div class="slide-content">
                 <ul class="bullet-points">
                     <li>Il radar è come un "occhio" che usa onde radio</li>
@@ -498,7 +447,7 @@
             </div>
         </div>
 
-        <!-- Slide 2: Un aereo, un pallino -->
+        <!-- Slide 2: Single target -->
         <div class="slide slide-2">
             <h1 class="slide-title">Un bersaglio: un pallino sullo schermo</h1>
             <div class="slide-content">
@@ -524,7 +473,7 @@
             </div>
         </div>
 
-        <!-- Slide 3: Due aerei, due pallini -->
+        <!-- Slide 3: Two targets -->
         <div class="slide slide-3">
             <h1 class="slide-title">Due aerei, due echi, due pallini</h1>
             <div class="slide-content">
@@ -554,7 +503,7 @@
             </div>
         </div>
 
-        <!-- Slide 4: Inganno radar -->
+        <!-- Slide 4: Radar deception -->
         <div class="slide slide-4">
             <h1 class="slide-title">Inganno radar: un solo aereo che sembra due</h1>
             <div class="slide-content">
@@ -581,9 +530,9 @@
             </div>
         </div>
 
-        <!-- Slide 5: RGPO -->
+        <!-- Slide 5: RGPO technique -->
         <div class="slide slide-5">
-            <h1 class="slide-title">RGPO: far scappare un bersaglio fantasma</h1>
+            <h1 class="slide-title">Inganno "RGPO": far scappare un bersaglio fantasma</h1>
             <div class="slide-content">
                 <ul class="bullet-points">
                     <li>Il pallino finto inizia vicino a quello vero</li>
@@ -609,7 +558,6 @@
         </div>
     </div>
 
-    <button class="toggle-notes" onclick="toggleNotes()">Mostra Note</button>
     <div class="slide-counter">
         <span id="current-slide">1</span> / 5
     </div>
@@ -617,61 +565,39 @@
         <button class="nav-btn" id="prev-btn" onclick="previousSlide()">← Precedente</button>
         <button class="nav-btn" id="next-btn" onclick="nextSlide()">Successiva →</button>
     </div>
-    <div class="speaker-notes" id="speaker-notes"></div>
 
     <script>
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
-        let notesVisible = false;
-        // Traccia i timeout delle animazioni per poterli cancellare quando si cambia slide
+        
+        // Track animation timeouts to cancel them when changing slides
         let animationTimeouts = [];
-        // Traccia se l'animazione del movimento RGPO è già stata avviata per la slide 5
+        
+        // Track if RGPO movement animation has already started for slide 5
         let rgpoMovementStarted = false;
-        // Traccia il timeout per il loop dell'animazione RGPO
+        
+        // Track timeout for RGPO animation loop
         let rgpoLoopTimeout = null;
 
-        const speakerNotes = [
-            {
-                title: "Slide 1: Come fa un radar a vedere gli aerei?",
-                text: "Spiega a voce che il radar è uno strumento che 'sente' l'ambiente intorno usando impulsi elettromagnetici, come se fossero piccoli pacchetti di energia lanciati nello spazio. Questi impulsi rimbalzano sugli oggetti (ad esempio un aereo) e tornano indietro. Analizzando quanto tempo impiegano a tornare, il radar capisce a che distanza si trova l'oggetto. Non entrare in formule: sottolinea solo la metafora dell''occhio' che lancia lampi invisibili e ascolta gli echi."
-            },
-            {
-                title: "Slide 2: Un bersaglio: un pallino sullo schermo",
-                text: "Spiega che l'operatore non vede l'aereo, vede solo un punto su uno schermo. Il punto rappresenta 'qualcosa' che ha riflettuto l'onda: può essere un aereo, una nave, un drone, ecc. Il tempo di andata e ritorno dell'impulso permette di calcolare la distanza (ma non fare formule, basta il concetto). Questo concetto sarà importante quando parlerai di inganno: il radar si fida di quel pallino."
-            },
-            {
-                title: "Slide 3: Due aerei, due echi, due pallini",
-                text: "Spiega che il radar invia una sola 'pallottola di energia', ma se ci sono più oggetti, questa rimbalza su tutti. Poiché gli aerei sono a distanze leggermente diverse, i due echi tornano al radar in momenti leggermente diversi. Il radar è in grado di 'separare' questi due echi nel tempo e quindi li mostra come due pallini. Sottolinea che questo è lo scenario 'onesto': due aerei veri → due punti veri sullo schermo."
-            },
-            {
-                title: "Slide 4: Inganno radar: un solo aereo che sembra due",
-                text: "Spiega che il caccia è equipaggiato con un sistema di guerra elettronica. Appena 'sente' di essere illuminato dal radar (riceve gli impulsi), reagisce e comincia a trasmettere dei falsi echi, cioè segnali che imitano quelli riflessi da un bersaglio reale. Da fuori, il radar crede di vedere due aerei: quello vero e quello finto creato dal segnale ingannatore. Questo è il cuore dell'inganno radar: sfruttare il fatto che il radar si fida di ciò che riceve come eco."
-            },
-            {
-                title: "Slide 5: RGPO: far scappare un bersaglio fantasma",
-                text: "Spiega che l'RGPO è una tecnica di inganno in cui il caccia: prima crea un eco finto molto vicino a quello vero, così che il radar lo 'agganci'. Poi, poco alla volta, ritarda sempre di più questo falso eco, simulando un bersaglio che si allontana. Il radar, inseguendo questo bersaglio fantasma, può spostare la sua attenzione (e le sue misure di distanza) sul pallino sbagliato. Nel frattempo, il bersaglio vero può cambiare rotta, avvicinarsi o fuggire, mentre il sistema che lo controlla guarda dal lato opposto. Concludi collegando: questo è un esempio di guerra elettronica, dove non si distrugge il radar, ma si inganna la sua percezione della realtà."
-            }
-        ];
-
         function showSlide(n) {
-            // Cancella tutti i timeout delle animazioni precedenti
+            // Cancel all previous animation timeouts
             animationTimeouts.forEach(timeout => clearTimeout(timeout));
             animationTimeouts = [];
             
-            // Cancella il timeout del loop RGPO se presente
+            // Cancel RGPO loop timeout if present
             if (rgpoLoopTimeout) {
                 clearTimeout(rgpoLoopTimeout);
                 rgpoLoopTimeout = null;
             }
             
-            // Resetta l'animazione del blip fantasma quando si cambia slide
+            // Reset ghost blip animation when changing slides
             const oldSlide = slides[currentSlide];
             if (oldSlide) {
                 const oldBlips = oldSlide.querySelectorAll('.radar-blip');
                 oldBlips.forEach(blip => {
                     blip.classList.remove('blip-moving', 'blip-appear', 'blip-real');
-                    // Rimuovi anche gli event listener
+                    // Remove event listeners by cloning
                     const newBlip = blip.cloneNode(true);
                     blip.parentNode.replaceChild(newBlip, blip);
                 });
@@ -681,11 +607,10 @@
             currentSlide = (n + totalSlides) % totalSlides;
             slides[currentSlide].classList.add('active');
             
-            // Resetta il flag del movimento RGPO quando si cambia slide
+            // Reset RGPO movement flag when changing slides
             rgpoMovementStarted = false;
             
             updateNavigation();
-            updateNotes();
             animateSlide(currentSlide);
         }
 
@@ -707,30 +632,13 @@
             document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
         }
 
-        function toggleNotes() {
-            notesVisible = !notesVisible;
-            const notesDiv = document.getElementById('speaker-notes');
-            if (notesVisible) {
-                notesDiv.classList.add('show');
-            } else {
-                notesDiv.classList.remove('show');
-            }
-        }
-
-        function updateNotes() {
-            const notesDiv = document.getElementById('speaker-notes');
-            if (notesVisible && speakerNotes[currentSlide]) {
-                notesDiv.innerHTML = `<h4>${speakerNotes[currentSlide].title}</h4><p>${speakerNotes[currentSlide].text}</p>`;
-            }
-        }
-
-        // Funzione helper per far ripartire l'animazione dopo che l'onda riflessa è tornata
+        // Helper function to restart animation after reflected wave returns
         function restartAnimation(slideIndex) {
-            // Piccolo delay prima di ripartire (simula il tempo tra impulsi)
-            // Solo se siamo ancora sulla stessa slide
+            // Small delay before restarting (simulates time between pulses)
+            // Only if we're still on the same slide
             if (slideIndex === currentSlide) {
-                // Per la slide 5 (RGPO), usiamo un intervallo molto più rapido (delay = 0)
-                // Per le altre slide, manteniamo 300ms
+                // For slide 5 (RGPO), use much faster interval (delay = 0)
+                // For other slides, maintain 300ms
                 const delay = slideIndex === 4 ? 0 : 300;
                 const timeout = setTimeout(() => {
                     if (slideIndex === currentSlide) {
@@ -742,84 +650,82 @@
         }
 
         function setupRgpoAnimationLoop(blip) {
-            // Funzione che gestisce il loop dell'animazione RGPO
+            // Function that handles the RGPO animation loop
             function handleAnimationEnd() {
-                // Verifica che siamo ancora sulla slide 5
+                // Verify we're still on slide 5
                 if (currentSlide !== 4) {
                     return;
                 }
                 
-                // Aspetta 1 secondo prima di riavviare l'animazione
+                // Wait 1 second before restarting animation
                 rgpoLoopTimeout = setTimeout(() => {
-                    // Verifica ancora che siamo sulla slide 5
+                    // Verify again that we're on slide 5
                     if (currentSlide !== 4) {
                         return;
                     }
                     
-                    // Rimuovi la classe per resettare l'animazione
+                    // Remove class to reset animation
                     blip.classList.remove('blip-moving');
                     
-                    // Resetta esplicitamente il transform alla posizione iniziale
+                    // Explicitly reset transform to initial position
                     blip.style.transform = 'translate(-50%, -50%)';
                     
-                    // Forza un reflow per assicurarsi che la rimozione sia applicata
+                    // Force reflow to ensure removal is applied
                     void blip.offsetWidth;
                     
-                    // Riaggiungi la classe per far ripartire l'animazione
+                    // Re-add class to restart animation
                     blip.classList.add('blip-moving');
-                }, 1000); // 1 secondo di pausa
+                }, 1000); // 1 second pause
             }
             
-            // Aggiungi l'event listener per quando l'animazione finisce
+            // Add event listener for when animation ends
             blip.addEventListener('animationend', handleAnimationEnd, { once: false });
         }
 
         function animateSlide(slideIndex) {
             const slide = slides[slideIndex];
             
-            // Reset animazioni
+            // Reset animations
             const waves = slide.querySelectorAll('.radar-wave');
             waves.forEach(w => w.remove());
             
-            // Rimuovi eventuali animazioni di fade-out in corso quando si riparte l'animazione
+            // Remove any fade-out animations in progress when restarting animation
             const blips = slide.querySelectorAll('.radar-blip');
             blips.forEach(blip => {
                 blip.classList.remove('blip-fade-out');
             });
             
-            // Rimuovi i pallini con un delay per aumentare la persistenza visiva
-            // Il delay permette ai pallini di rimanere visibili più a lungo
-            // Per la slide 5 (RGPO), riduciamo la persistenza per adattarla al ritmo più rapido
-            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 300ms per slide 5, 1500ms per le altre
+            // Remove blips with delay to increase visual persistence
+            // For slide 5 (RGPO), reduce persistence to adapt to faster rhythm
+            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 300ms for slide 5, 1500ms for others
             const blipRemovalTimeout = setTimeout(() => {
-                // Verifica che siamo ancora sulla stessa slide prima di rimuovere i pallini
+                // Verify we're still on the same slide before removing blips
                 if (slideIndex === currentSlide) {
                     blips.forEach(blip => {
-                        // Per la slide 5 (RGPO), non applicare fade-out al blip che si muove
-                        // se l'animazione del movimento è già stata avviata
+                        // For slide 5 (RGPO), don't apply fade-out to moving blip
+                        // if movement animation has already started
                         if (slideIndex === 4 && blip.classList.contains('blip-moving')) {
-                            // Non fare nulla, lascia che l'animazione continui
                             return;
                         }
-                        // Applica l'animazione di fade-out (come in un display radar classico)
+                        // Apply fade-out animation (like in a classic radar display)
                         blip.classList.add('blip-fade-out');
-                        // Rimuovi le altre classi dopo che il fade-out è completato (1 secondo)
+                        // Remove other classes after fade-out completes (1 second)
                         setTimeout(() => {
                             if (slideIndex === currentSlide) {
-                                // Per la slide 5, non rimuovere blip-moving se è presente
+                                // For slide 5, don't remove blip-moving if present
                                 if (slideIndex === 4 && blip.classList.contains('blip-moving')) {
                                     blip.classList.remove('blip-appear', 'blip-fade-out');
                                 } else {
                                     blip.classList.remove('blip-appear', 'blip-moving', 'blip-fade-out');
                                 }
                             }
-                        }, 1000); // Tempo dell'animazione fade-out
+                        }, 1000); // Fade-out animation time
                     });
                 }
             }, persistenceDelay);
             animationTimeouts.push(blipRemovalTimeout);
 
-            // Animazioni specifiche per slide
+            // Slide-specific animations
             const initialTimeout = setTimeout(() => {
                 const visualArea = slide.querySelector('.visual-area');
                 const radarStation = slide.querySelector('.radar-station');
@@ -827,53 +733,53 @@
                 
                 if (!radarStation || !visualArea) return;
                 
-                // Calcola posizione centro radar
+                // Calculate radar center position
                 const radarRect = radarStation.getBoundingClientRect();
                 const visualRect = visualArea.getBoundingClientRect();
                 const radarX = radarRect.left - visualRect.left + radarRect.width / 2;
                 const radarY = radarRect.top - visualRect.top + radarRect.height / 2;
                 
                 if (slideIndex === 0) {
-                    // Slide 1: impulso dal radar all'aereo e ritorno
+                    // Slide 1: pulse from radar to aircraft and back
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        // Onda outgoing: centro fisso sul radar, si espande fino a toccare l'aereo
+                        // Outgoing wave: fixed center on radar, expands until it touches aircraft
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa
-                            // Onda return: centro fisso sull'aereo, si espande verso il radar
+                            // When wave touches target, reflected wave starts
+                            // Return wave: fixed center on aircraft, expands toward radar
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
-                                // Quando l'onda riflessa raggiunge il radar, riparte l'animazione
+                                // When reflected wave reaches radar, restart animation
                                 restartAnimation(slideIndex);
                             });
                         });
                     }
                 } else if (slideIndex === 1) {
-                    // Slide 2: impulso e blip
+                    // Slide 2: pulse and blip
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        // Onda outgoing: centro fisso sul radar
+                        // Outgoing wave: fixed center on radar
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa
-                            // Il blip appare quando l'onda riflessa raggiunge il radar
+                            // When wave touches target, reflected wave starts
+                            // Blip appears when reflected wave reaches radar
                             const blip = slide.querySelector('.radar-blip');
                             createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
-                                // Quando l'onda riflessa raggiunge il radar, appare il blip
+                                // When reflected wave reaches radar, blip appears
                                 if (blip) {
                                     blip.classList.add('blip-appear');
                                 }
-                                // Riparte l'animazione dopo che l'onda riflessa è tornata
+                                // Restart animation after reflected wave returns
                                 restartAnimation(slideIndex);
                             });
                         });
                     }
                 } else if (slideIndex === 2) {
-                    // Slide 3: impulso a due aerei, due blip
+                    // Slide 3: pulse to two aircraft, two blips
                     if (aircrafts.length >= 2) {
                         const aircraft1Rect = aircrafts[0].getBoundingClientRect();
                         const aircraft1X = aircraft1Rect.left - visualRect.left + aircraft1Rect.width / 2;
@@ -883,7 +789,7 @@
                         const aircraft2X = aircraft2Rect.left - visualRect.left + aircraft2Rect.width / 2;
                         const aircraft2Y = aircraft2Rect.top - visualRect.top + aircraft2Rect.height / 2;
                         
-                        // Calcola distanze per determinare quale aereo viene toccato per primo
+                        // Calculate distances to determine which aircraft is hit first
                         const dx1 = aircraft1X - radarX;
                         const dy1 = aircraft1Y - radarY;
                         const distance1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
@@ -892,7 +798,7 @@
                         const dy2 = aircraft2Y - radarY;
                         const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
                         
-                        // Usa il target più vicino come riferimento per il callback
+                        // Use nearest target as reference for callback
                         const nearestTarget = distance1 <= distance2 ? 
                             {x: aircraft1X, y: aircraft1Y, distance: distance1, blipIndex: 0} : 
                             {x: aircraft2X, y: aircraft2Y, distance: distance2, blipIndex: 1};
@@ -900,49 +806,49 @@
                             {x: aircraft1X, y: aircraft1Y, distance: distance1, blipIndex: 0} : 
                             {x: aircraft2X, y: aircraft2Y, distance: distance2, blipIndex: 1};
                         
-                        // Onda outgoing: centro fisso sul radar, si espande e tocca entrambi gli aerei
+                        // Outgoing wave: fixed center on radar, expands and touches both aircraft
                         createWave(slide, radarX, radarY, nearestTarget.x, nearestTarget.y, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target più vicino, parte l'eco
-                            // I blip appaiono quando le onde riflesse raggiungono il radar
+                            // When wave touches nearest target, echo starts
+                            // Blips appear when reflected waves reach radar
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                // Traccia quando tutte le onde riflesse sono tornate per ripartire l'animazione
+                                // Track when all reflected waves have returned to restart animation
                                 let returnWavesCount = 0;
                                 const totalReturnWaves = 2;
                                 
-                                // Quando l'onda riflessa dal target più vicino raggiunge il radar, appare il blip corrispondente
+                                // When reflected wave from nearest target reaches radar, corresponding blip appears
                                 createWave(slide, nearestTarget.x, nearestTarget.y, radarX, radarY, 'return', false, () => {
                                     blips[nearestTarget.blipIndex].classList.add('blip-appear');
                                     returnWavesCount++;
-                                    // Se tutte le onde sono tornate, riparte l'animazione
+                                    // If all waves have returned, restart animation
                                     if (returnWavesCount === totalReturnWaves) {
                                         restartAnimation(slideIndex);
                                     }
                                 });
                                 
-                                // Se c'è un target più lontano, calcola quando viene toccato
+                                // If there's a farther target, calculate when it's hit
                                 if (farthestTarget.distance > nearestTarget.distance) {
-                                    // L'onda trasmessa impiega timeDiff in più per raggiungere il target più lontano
-                                    const waveSpeed = 1800; // Usa la stessa velocità della funzione createWave
+                                    // Transmitted wave takes timeDiff longer to reach farther target
+                                    const waveSpeed = 1800; // Use same speed as createWave function
                                     const timeDiff = ((farthestTarget.distance - nearestTarget.distance) / waveSpeed) * 1000;
-                                    // Quando l'onda trasmessa tocca il target più lontano, parte l'onda riflessa
+                                    // When transmitted wave touches farther target, reflected wave starts
                                     setTimeout(() => {
-                                        // Quando l'onda riflessa dal target più lontano raggiunge il radar, appare il blip corrispondente
+                                        // When reflected wave from farther target reaches radar, corresponding blip appears
                                         createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false, () => {
                                             blips[farthestTarget.blipIndex].classList.add('blip-appear');
                                             returnWavesCount++;
-                                            // Se tutte le onde sono tornate, riparte l'animazione
+                                            // If all waves have returned, restart animation
                                             if (returnWavesCount === totalReturnWaves) {
                                                 restartAnimation(slideIndex);
                                             }
                                         });
                                     }, timeDiff);
                                 } else {
-                                    // Se sono alla stessa distanza, parte subito
+                                    // If at same distance, start immediately
                                     createWave(slide, farthestTarget.x, farthestTarget.y, radarX, radarY, 'return', false, () => {
                                         blips[farthestTarget.blipIndex].classList.add('blip-appear');
                                         returnWavesCount++;
-                                        // Se tutte le onde sono tornate, riparte l'animazione
+                                        // If all waves have returned, restart animation
                                         if (returnWavesCount === totalReturnWaves) {
                                             restartAnimation(slideIndex);
                                         }
@@ -952,40 +858,40 @@
                         });
                     }
                 } else if (slideIndex === 3) {
-                    // Slide 4: impulso e due blip (uno finto)
-                    // I blip hanno posizioni hardcoded nell'HTML (stesse della slide 3)
+                    // Slide 4: pulse and two blips (one fake)
+                    // Blips have hardcoded positions in HTML (same as slide 3)
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        // Onda outgoing: centro fisso sul radar
+                        // Outgoing wave: fixed center on radar
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa vera
-                            // I blip appaiono quando le onde riflesse raggiungono il radar
+                            // When wave touches target, real reflected wave starts
+                            // Blips appear when reflected waves reach radar
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                // Traccia quando tutte le onde riflesse sono tornate per ripartire l'animazione
+                                // Track when all reflected waves have returned to restart animation
                                 let returnWavesCount = 0;
                                 const totalReturnWaves = 2;
                                 
-                                // Quando l'onda riflessa vera raggiunge il radar, appare il blip più lontano dal centro (blips[1])
+                                // When real reflected wave reaches radar, blip farther from center appears (blips[1])
                                 createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
                                     blips[1].classList.add('blip-appear');
                                     returnWavesCount++;
-                                    // Se tutte le onde sono tornate, riparte l'animazione
+                                    // If all waves have returned, restart animation
                                     if (returnWavesCount === totalReturnWaves) {
                                         restartAnimation(slideIndex);
                                     }
                                 });
                                 
-                                // Poco dopo parte anche l'eco finto (simula il sistema di inganno)
+                                // Shortly after, fake echo also starts (simulates deception system)
                                 setTimeout(() => {
-                                    // Quando l'onda riflessa finta raggiunge il radar, appare il blip più vicino al centro (blips[0])
+                                    // When fake reflected wave reaches radar, blip closer to center appears (blips[0])
                                     createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
                                         blips[0].classList.add('blip-appear');
                                         returnWavesCount++;
-                                        // Se tutte le onde sono tornate, riparte l'animazione
+                                        // If all waves have returned, restart animation
                                         if (returnWavesCount === totalReturnWaves) {
                                             restartAnimation(slideIndex);
                                         }
@@ -995,74 +901,73 @@
                         });
                     }
                 } else if (slideIndex === 4) {
-                    // Slide 5: RGPO - blip che si muove
-                    // I blip hanno posizioni hardcoded nell'HTML (stesse della slide 3 e 4)
+                    // Slide 5: RGPO - moving blip
+                    // Blips have hardcoded positions in HTML (same as slides 3 and 4)
                     if (aircrafts.length > 0) {
                         const aircraftRect = aircrafts[0].getBoundingClientRect();
                         const aircraftX = aircraftRect.left - visualRect.left + aircraftRect.width / 2;
                         const aircraftY = aircraftRect.top - visualRect.top + aircraftRect.height / 2;
                         
-                        // Calcola la distanza per determinare il tempo di propagazione
+                        // Calculate distance to determine propagation time
                         const dx = aircraftX - radarX;
                         const dy = aircraftY - radarY;
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
-                        // Velocità delle onde per la slide 5 (più veloce per impulsi più frequenti)
-                        const waveSpeed = 5000; // pixel al secondo (aumentato per ritmo più rapido)
-                        const propagationTime = (distance / waveSpeed) * 1000; // tempo in ms
+                        // Wave speed for slide 5 (faster for more frequent pulses)
+                        const waveSpeed = 5000; // pixels per second (increased for faster rhythm)
                         
-                        // Onda outgoing: centro fisso sul radar (usa velocità personalizzata)
+                        // Outgoing wave: fixed center on radar (uses custom speed)
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
-                            // Quando l'onda tocca il target, parte l'onda riflessa vera
+                            // When wave touches target, real reflected wave starts
                             const blips = slide.querySelectorAll('.radar-blip');
                             if (blips.length >= 2) {
-                                // Traccia quando tutte le onde riflesse sono tornate per ripartire l'animazione
+                                // Track when all reflected waves have returned to restart animation
                                 let returnWavesCount = 0;
                                 const totalReturnWaves = 2;
                                 
-                                // Quando l'onda riflessa vera raggiunge il radar, appare il blip reale (usa velocità personalizzata)
+                                // When real reflected wave reaches radar, real blip appears (uses custom speed)
                                 createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', false, () => {
-                                    // Blip reale (primo) - appare quando l'onda vera arriva
+                                    // Real blip (first) - appears when real wave arrives
                                     blips[0].classList.add('blip-appear', 'blip-real');
                                     returnWavesCount++;
                                     
-                                    // Se tutte le onde sono tornate, riparte l'animazione
+                                    // If all waves have returned, restart animation
                                     if (returnWavesCount === totalReturnWaves) {
                                         restartAnimation(slideIndex);
                                     }
                                 }, waveSpeed);
                                 
-                                // L'onda finta parte dall'aereo quando viene illuminato (simula il sistema di inganno)
-                                // L'onda finta ha un leggero ritardo per simulare il tempo di elaborazione del sistema
+                                // Fake wave starts from aircraft when illuminated (simulates deception system)
+                                // Fake wave has slight delay to simulate system processing time
                                 setTimeout(() => {
-                                    // Quando l'onda finta raggiunge il radar, appare il blip finto (usa velocità personalizzata)
+                                    // When fake wave reaches radar, fake blip appears (uses custom speed)
                                     createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
-                                        // Blip finto (secondo) - appare quando l'onda finta arriva (sincronizzato)
-                                        // Non riaggiungere blip-appear se l'animazione del movimento è già in corso
+                                        // Fake blip (second) - appears when fake wave arrives (synchronized)
+                                        // Don't re-add blip-appear if movement animation is already in progress
                                         if (!blips[1].classList.contains('blip-moving')) {
                                             blips[1].classList.add('blip-appear');
                                         }
                                         returnWavesCount++;
                                         
-                                        // Avvia il movimento RGPO solo una volta, al primo impulso
+                                        // Start RGPO movement only once, on first pulse
                                         if (!rgpoMovementStarted) {
                                             rgpoMovementStarted = true;
-                                            // Dopo un breve delay, inizia il movimento RGPO
+                                            // After brief delay, start RGPO movement
                                             setTimeout(() => {
                                                 blips[1].classList.add('blip-moving');
-                                                // Configura il loop dell'animazione (pausa di 1 sec e ripartenza)
+                                                // Configure animation loop (1 sec pause and restart)
                                                 setupRgpoAnimationLoop(blips[1]);
-                                                // Crea traccia del movimento
+                                                // Create movement trail
                                                 createBlipTrail(slide, blips[1]);
                                             }, 200);
                                         }
                                         
-                                        // Se tutte le onde sono tornate, riparte l'animazione
+                                        // If all waves have returned, restart animation
                                         if (returnWavesCount === totalReturnWaves) {
                                             restartAnimation(slideIndex);
                                         }
                                     }, waveSpeed);
-                                }, 50); // Piccolo delay per simulare il tempo di reazione del sistema di inganno
+                                }, 50); // Small delay to simulate deception system reaction time
                             }
                         }, waveSpeed);
                     }
@@ -1079,23 +984,23 @@
             const dy = targetY - centerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // Velocità aumentata per dare l'idea della velocità della luce
-            // Se non specificata, usa la velocità di default
-            const waveSpeed = customWaveSpeed || 1800; // pixel al secondo (default: 1800)
+            // Increased speed to give idea of light speed
+            // If not specified, use default speed
+            const waveSpeed = customWaveSpeed || 1800; // pixels per second (default: 1800)
             
-            // Crea una singola onda
+            // Create a single wave
             const wave = document.createElement('div');
             wave.className = `radar-wave wave-${type}`;
             if (isFake && type === 'return') {
                 wave.classList.add('fake');
             }
             
-            // Crea il gradiente interno
+            // Create internal gradient
             const waveFill = document.createElement('div');
             waveFill.className = 'wave-fill';
             wave.appendChild(waveFill);
             
-            // Il centro rimane fisso sulla sorgente
+            // Center remains fixed on source
             wave.style.left = centerX + 'px';
             wave.style.top = centerY + 'px';
             const startSize = 20;
@@ -1106,19 +1011,19 @@
             
             visualArea.appendChild(wave);
             
-            // Anima l'espansione dell'onda (centro fisso, si espande radialmente)
+            // Animate wave expansion (fixed center, expands radially)
             let startTime = Date.now();
-            const maxRadius = distance * 1.5; // L'onda si espande ben oltre il target
+            const maxRadius = distance * 1.5; // Wave expands well beyond target
             let targetReached = false;
             
             function animate() {
                 const elapsed = (Date.now() - startTime) / 1000;
                 
-                // Il centro rimane sempre fisso
+                // Center always remains fixed
                 wave.style.left = centerX + 'px';
                 wave.style.top = centerY + 'px';
                 
-                // Crescita lineare del raggio: r(t) = r0 + v*t (velocità costante)
+                // Linear radius growth: r(t) = r0 + v*t (constant velocity)
                 const currentRadius = startRadius + waveSpeed * elapsed;
                 const currentSize = currentRadius * 2;
                 const progress = Math.min((currentRadius - startRadius) / (maxRadius - startRadius), 1);
@@ -1126,25 +1031,25 @@
                 wave.style.width = currentSize + 'px';
                 wave.style.height = currentSize + 'px';
                 
-                // Controlla se l'onda ha raggiunto il target
+                // Check if wave has reached target
                 if (!targetReached && onReachTarget && currentRadius >= distance) {
                     targetReached = true;
                     onReachTarget();
                 }
                 
-                // Opacità del bordo: si affievolisce man mano che si espande
+                // Border opacity: fades as it expands
                 const borderOpacity = 1 - progress * 0.7;
                 wave.style.opacity = Math.max(0, borderOpacity);
                 
-                // Opacità del gradiente interno: scompare velocemente
-                // Il gradiente deve essere visibile solo quando l'onda è piccola
-                const fillOpacity = Math.max(0, 1 - progress * 2.5); // Scompare molto più velocemente
+                // Internal gradient opacity: disappears quickly
+                // Gradient should only be visible when wave is small
+                const fillOpacity = Math.max(0, 1 - progress * 2.5); // Disappears much faster
                 waveFill.style.opacity = fillOpacity;
                 
-                // Trasformazione fissa: solo traslazione per centrare l'onda
+                // Fixed transformation: only translation to center wave
                 wave.style.transform = `translate(-50%, -50%)`;
                 
-                // Continua l'animazione finché il raggio non supera il massimo
+                // Continue animation until radius exceeds maximum
                 if (currentRadius < maxRadius) {
                     requestAnimationFrame(animate);
                 } else {
@@ -1165,14 +1070,14 @@
             const startX = blipRect.left - screenRect.left + blipRect.width / 2;
             const startY = blipRect.top - screenRect.top + blipRect.height / 2;
             
-            // Crea alcuni punti di traccia
-            // Percorso aggiornato: 46px orizzontale, -45px verticale (invece di 180px, -120px)
+            // Create some trail points
+            // Updated path: 46px horizontal, -45px vertical (instead of 180px, -120px)
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     const trail = document.createElement('div');
                     trail.className = 'blip-trail';
-                    const offsetX = (i * 9.2); // 46px / 5 ≈ 9.2px per punto
-                    const offsetY = -(i * 9); // 45px / 5 = 9px per punto
+                    const offsetX = (i * 9.2); // 46px / 5 ≈ 9.2px per point
+                    const offsetY = -(i * 9); // 45px / 5 = 9px per point
                     trail.style.left = (startX + offsetX) + 'px';
                     trail.style.top = (startY + offsetY) + 'px';
                     screen.appendChild(trail);
@@ -1184,18 +1089,16 @@
             }
         }
 
-        // Navigazione da tastiera
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 nextSlide();
             } else if (e.key === 'ArrowLeft') {
                 previousSlide();
-            } else if (e.key === 'n' || e.key === 'N') {
-                toggleNotes();
             }
         });
 
-        // Inizializza
+        // Initialize
         updateNavigation();
         animateSlide(0);
     </script>
