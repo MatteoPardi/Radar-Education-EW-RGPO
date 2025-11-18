@@ -136,8 +136,8 @@
         /* Aereo stilizzato */
         .aircraft {
             position: absolute;
-            width: 80px;
-            height: 40px;
+            width: 300px;
+            height: 150px;
             opacity: 0;
             animation: fadeIn 1s ease-in 1s forwards;
         }
@@ -145,10 +145,12 @@
         .aircraft-body {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #3a3a5e, #2a2a4e);
-            clip-path: polygon(0% 50%, 20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%);
-            border: 2px solid #00ff88;
-            box-shadow: 0 0 15px #00ff88;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px #00ff88);
+        }
+
+        .aircraft.enemy .aircraft-body {
+            filter: drop-shadow(0 0 15px #ff4444) sepia(100%) saturate(200%) hue-rotate(0deg) brightness(1.1);
         }
 
         /* Onda radar sferica */
@@ -384,37 +386,32 @@
         /* Slide specifiche */
         .slide-1 .aircraft {
             top: 200px;
-            right: 500px;
+            right: 700px;
         }
 
         .slide-2 .aircraft {
             top: 200px;
-            right: 500px;
+            right: 700px;
         }
 
         .slide-3 .aircraft {
-            top: 150px;
-            right: 320px;
+            top: 100px;
+            right: 500px;
         }
 
         .slide-3 .aircraft.second {
             top: 200px;
-            right: 500px;
+            right: 700px;
         }
 
         .slide-4 .aircraft {
             top: 200px;
-            right: 500px;
-        }
-
-        .slide-4 .aircraft.enemy {
-            border-color: #ff4444;
-            box-shadow: 0 0 15px #ff4444;
+            right: 700px;
         }
 
         .slide-5 .aircraft {
             top: 200px;
-            right: 500px;
+            right: 700px;
         }
 
         /* Animazioni per RGPO */
@@ -490,7 +487,7 @@
                         </div>
                     </div>
                     <div class="aircraft">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                 </div>
             </div>
@@ -512,7 +509,7 @@
                         </div>
                     </div>
                     <div class="aircraft">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
@@ -538,10 +535,10 @@
                         </div>
                     </div>
                     <div class="aircraft">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                     <div class="aircraft second">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
@@ -568,7 +565,7 @@
                         </div>
                     </div>
                     <div class="aircraft enemy">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
@@ -595,7 +592,7 @@
                         </div>
                     </div>
                     <div class="aircraft enemy">
-                        <div class="aircraft-body"></div>
+                        <img src="aircraft-image.png" alt="Aereo" class="aircraft-body">
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
