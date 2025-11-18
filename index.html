@@ -570,6 +570,8 @@
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
+        const DEFAULT_WAVE_SPEED = 1400; // pixels per second (slides 1-4)
+        const RGPO_WAVE_SPEED = 3500;    // pixels per second (slide 5)
         
         // Track animation timeouts to cancel them when changing slides
         let animationTimeouts = [];
@@ -695,9 +697,9 @@
                 blip.classList.remove('blip-fade-out');
             });
             
-            // Remove blips with delay to increase visual persistence
-            // For slide 5 (RGPO), reduce persistence to adapt to faster rhythm
-            const persistenceDelay = slideIndex === 4 ? 300 : 600; // 300ms for slide 5, 600ms for slides 1-4
+            // Remove blips with shorter delay to keep display lively
+            // Slide 5 (RGPO) remains slightly faster than the others
+            const persistenceDelay = slideIndex === 4 ? 200 : 350; // ms
             const blipRemovalTimeout = setTimeout(() => {
                 // Verify we're still on the same slide before removing blips
                 if (slideIndex === currentSlide) {
@@ -829,7 +831,7 @@
                                 // If there's a farther target, calculate when it's hit
                                 if (farthestTarget.distance > nearestTarget.distance) {
                                     // Transmitted wave takes timeDiff longer to reach farther target
-                                    const waveSpeed = 1800; // Use same speed as createWave function
+                                    const waveSpeed = DEFAULT_WAVE_SPEED;
                                     const timeDiff = ((farthestTarget.distance - nearestTarget.distance) / waveSpeed) * 1000;
                                     // When transmitted wave touches farther target, reflected wave starts
                                     setTimeout(() => {
@@ -914,7 +916,7 @@
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
                         // Wave speed for slide 5 (faster for more frequent pulses)
-                        const waveSpeed = 5000; // pixels per second (increased for faster rhythm)
+                        const waveSpeed = RGPO_WAVE_SPEED; // pixels per second (fits RGPO pacing)
                         
                         // Outgoing wave: fixed center on radar (uses custom speed)
                         createWave(slide, radarX, radarY, aircraftX, aircraftY, 'outgoing', false, () => {
@@ -984,9 +986,8 @@
             const dy = targetY - centerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // Increased speed to give idea of light speed
-            // If not specified, use default speed
-            const waveSpeed = customWaveSpeed || 1800; // pixels per second (default: 1800)
+            // Default wave speed
+            const waveSpeed = customWaveSpeed || DEFAULT_WAVE_SPEED;
             
             // Create a single wave
             const wave = document.createElement('div');
