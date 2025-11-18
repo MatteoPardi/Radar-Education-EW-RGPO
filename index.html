@@ -697,7 +697,7 @@
             
             // Remove blips with delay to increase visual persistence
             // For slide 5 (RGPO), reduce persistence to adapt to faster rhythm
-            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 300ms for slide 5, 1500ms for others
+            const persistenceDelay = slideIndex === 4 ? 300 : 600; // 300ms for slide 5, 600ms for slides 1-4
             const blipRemovalTimeout = setTimeout(() => {
                 // Verify we're still on the same slide before removing blips
                 if (slideIndex === currentSlide) {
