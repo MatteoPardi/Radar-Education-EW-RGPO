@@ -273,6 +273,19 @@
             }
         }
 
+        .blip-fade-out {
+            animation: blipFadeOut 1s ease-out forwards;
+        }
+
+        @keyframes blipFadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
         /* Navigazione */
         .navigation {
             position: fixed;
@@ -704,17 +717,29 @@
             const waves = slide.querySelectorAll('.radar-wave');
             waves.forEach(w => w.remove());
             
+            // Rimuovi eventuali animazioni di fade-out in corso quando si riparte l'animazione
+            const blips = slide.querySelectorAll('.radar-blip');
+            blips.forEach(blip => {
+                blip.classList.remove('blip-fade-out');
+            });
+            
             // Rimuovi i pallini con un delay per aumentare la persistenza visiva
             // Il delay permette ai pallini di rimanere visibili più a lungo
-            const blips = slide.querySelectorAll('.radar-blip');
             const blipRemovalTimeout = setTimeout(() => {
                 // Verifica che siamo ancora sulla stessa slide prima di rimuovere i pallini
                 if (slideIndex === currentSlide) {
                     blips.forEach(blip => {
-                        blip.classList.remove('blip-appear', 'blip-moving');
+                        // Applica l'animazione di fade-out (come in un display radar classico)
+                        blip.classList.add('blip-fade-out');
+                        // Rimuovi le altre classi dopo che il fade-out è completato (1 secondo)
+                        setTimeout(() => {
+                            if (slideIndex === currentSlide) {
+                                blip.classList.remove('blip-appear', 'blip-moving', 'blip-fade-out');
+                            }
+                        }, 1000); // Tempo dell'animazione fade-out
                     });
                 }
-            }, 1500); // Delay di 1500ms prima di rimuovere i pallini (aumentato da 0ms)
+            }, 1500); // Delay di 1500ms prima di iniziare il fade-out (aumentato da 0ms)
             animationTimeouts.push(blipRemovalTimeout);
 
             // Animazioni specifiche per slide
