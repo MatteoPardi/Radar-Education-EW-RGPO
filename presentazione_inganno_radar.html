@@ -428,7 +428,12 @@
                 opacity: 0.9;
             }
             100% {
-                transform: translate(180px, -120px);
+                /* Posizione finale calcolata per rimanere dentro il display (raggio ~190px) */
+                /* Posizione iniziale: (120px, -48px) rispetto al centro del display */
+                /* Direzione originale: (180px, -120px) -> angolo ≈ -33.7° */
+                /* Posizione finale limitata a 190px dal centro: (165.7px, -92.8px) */
+                /* Nuovo translate: (45.7px, -44.8px) ≈ (46px, -45px) */
+                transform: translate(46px, -45px);
                 opacity: 0.7;
             }
         }
@@ -596,8 +601,8 @@
                     </div>
                     <div class="radar-screen">
                         <div class="radar-sweep"></div>
+                        <div class="radar-blip blip-moving" style="top: 43%; left: 70%;"></div>
                         <div class="radar-blip" style="top: 43%; left: 70%;"></div>
-                        <div class="radar-blip blip-moving" style="top: 38%; left: 80%;"></div>
                     </div>
                 </div>
             </div>
@@ -621,6 +626,10 @@
         let notesVisible = false;
         // Traccia i timeout delle animazioni per poterli cancellare quando si cambia slide
         let animationTimeouts = [];
+        // Traccia se l'animazione del movimento RGPO è già stata avviata per la slide 5
+        let rgpoMovementStarted = false;
+        // Traccia il timeout per il loop dell'animazione RGPO
+        let rgpoLoopTimeout = null;
 
         const speakerNotes = [
             {
@@ -650,9 +659,31 @@
             animationTimeouts.forEach(timeout => clearTimeout(timeout));
             animationTimeouts = [];
             
+            // Cancella il timeout del loop RGPO se presente
+            if (rgpoLoopTimeout) {
+                clearTimeout(rgpoLoopTimeout);
+                rgpoLoopTimeout = null;
+            }
+            
+            // Resetta l'animazione del blip fantasma quando si cambia slide
+            const oldSlide = slides[currentSlide];
+            if (oldSlide) {
+                const oldBlips = oldSlide.querySelectorAll('.radar-blip');
+                oldBlips.forEach(blip => {
+                    blip.classList.remove('blip-moving', 'blip-appear', 'blip-real');
+                    // Rimuovi anche gli event listener
+                    const newBlip = blip.cloneNode(true);
+                    blip.parentNode.replaceChild(newBlip, blip);
+                });
+            }
+            
             slides[currentSlide].classList.remove('active');
             currentSlide = (n + totalSlides) % totalSlides;
             slides[currentSlide].classList.add('active');
+            
+            // Resetta il flag del movimento RGPO quando si cambia slide
+            rgpoMovementStarted = false;
+            
             updateNavigation();
             updateNotes();
             animateSlide(currentSlide);
@@ -710,6 +741,39 @@
             }
         }
 
+        function setupRgpoAnimationLoop(blip) {
+            // Funzione che gestisce il loop dell'animazione RGPO
+            function handleAnimationEnd() {
+                // Verifica che siamo ancora sulla slide 5
+                if (currentSlide !== 4) {
+                    return;
+                }
+                
+                // Aspetta 1 secondo prima di riavviare l'animazione
+                rgpoLoopTimeout = setTimeout(() => {
+                    // Verifica ancora che siamo sulla slide 5
+                    if (currentSlide !== 4) {
+                        return;
+                    }
+                    
+                    // Rimuovi la classe per resettare l'animazione
+                    blip.classList.remove('blip-moving');
+                    
+                    // Resetta esplicitamente il transform alla posizione iniziale
+                    blip.style.transform = 'translate(-50%, -50%)';
+                    
+                    // Forza un reflow per assicurarsi che la rimozione sia applicata
+                    void blip.offsetWidth;
+                    
+                    // Riaggiungi la classe per far ripartire l'animazione
+                    blip.classList.add('blip-moving');
+                }, 1000); // 1 secondo di pausa
+            }
+            
+            // Aggiungi l'event listener per quando l'animazione finisce
+            blip.addEventListener('animationend', handleAnimationEnd, { once: false });
+        }
+
         function animateSlide(slideIndex) {
             const slide = slides[slideIndex];
             
@@ -726,17 +790,28 @@
             // Rimuovi i pallini con un delay per aumentare la persistenza visiva
             // Il delay permette ai pallini di rimanere visibili più a lungo
             // Per la slide 5 (RGPO), riduciamo la persistenza per adattarla al ritmo più rapido
-            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 600ms per slide 5, 1500ms per le altre
+            const persistenceDelay = slideIndex === 4 ? 300 : 1500; // 300ms per slide 5, 1500ms per le altre
             const blipRemovalTimeout = setTimeout(() => {
                 // Verifica che siamo ancora sulla stessa slide prima di rimuovere i pallini
                 if (slideIndex === currentSlide) {
                     blips.forEach(blip => {
+                        // Per la slide 5 (RGPO), non applicare fade-out al blip che si muove
+                        // se l'animazione del movimento è già stata avviata
+                        if (slideIndex === 4 && blip.classList.contains('blip-moving')) {
+                            // Non fare nulla, lascia che l'animazione continui
+                            return;
+                        }
                         // Applica l'animazione di fade-out (come in un display radar classico)
                         blip.classList.add('blip-fade-out');
                         // Rimuovi le altre classi dopo che il fade-out è completato (1 secondo)
                         setTimeout(() => {
                             if (slideIndex === currentSlide) {
-                                blip.classList.remove('blip-appear', 'blip-moving', 'blip-fade-out');
+                                // Per la slide 5, non rimuovere blip-moving se è presente
+                                if (slideIndex === 4 && blip.classList.contains('blip-moving')) {
+                                    blip.classList.remove('blip-appear', 'blip-fade-out');
+                                } else {
+                                    blip.classList.remove('blip-appear', 'blip-moving', 'blip-fade-out');
+                                }
                             }
                         }, 1000); // Tempo dell'animazione fade-out
                     });
@@ -933,7 +1008,7 @@
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
                         // Velocità delle onde per la slide 5 (più veloce per impulsi più frequenti)
-                        const waveSpeed = 6000; // pixel al secondo (aumentato per ritmo più rapido)
+                        const waveSpeed = 7000; // pixel al secondo (aumentato per ritmo più rapido)
                         const propagationTime = (distance / waveSpeed) * 1000; // tempo in ms
                         
                         // Onda outgoing: centro fisso sul radar (usa velocità personalizzata)
@@ -963,15 +1038,24 @@
                                     // Quando l'onda finta raggiunge il radar, appare il blip finto (usa velocità personalizzata)
                                     createWave(slide, aircraftX, aircraftY, radarX, radarY, 'return', true, () => {
                                         // Blip finto (secondo) - appare quando l'onda finta arriva (sincronizzato)
-                                        blips[1].classList.add('blip-appear');
+                                        // Non riaggiungere blip-appear se l'animazione del movimento è già in corso
+                                        if (!blips[1].classList.contains('blip-moving')) {
+                                            blips[1].classList.add('blip-appear');
+                                        }
                                         returnWavesCount++;
                                         
-                                        // Dopo un breve delay, inizia il movimento RGPO
-                                        setTimeout(() => {
-                                            blips[1].classList.add('blip-moving');
-                                            // Crea traccia del movimento
-                                            createBlipTrail(slide, blips[1]);
-                                        }, 200);
+                                        // Avvia il movimento RGPO solo una volta, al primo impulso
+                                        if (!rgpoMovementStarted) {
+                                            rgpoMovementStarted = true;
+                                            // Dopo un breve delay, inizia il movimento RGPO
+                                            setTimeout(() => {
+                                                blips[1].classList.add('blip-moving');
+                                                // Configura il loop dell'animazione (pausa di 1 sec e ripartenza)
+                                                setupRgpoAnimationLoop(blips[1]);
+                                                // Crea traccia del movimento
+                                                createBlipTrail(slide, blips[1]);
+                                            }, 200);
+                                        }
                                         
                                         // Se tutte le onde sono tornate, riparte l'animazione
                                         if (returnWavesCount === totalReturnWaves) {
@@ -1082,12 +1166,13 @@
             const startY = blipRect.top - screenRect.top + blipRect.height / 2;
             
             // Crea alcuni punti di traccia
+            // Percorso aggiornato: 46px orizzontale, -45px verticale (invece di 180px, -120px)
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     const trail = document.createElement('div');
                     trail.className = 'blip-trail';
-                    const offsetX = (i * 36); // 180px / 5
-                    const offsetY = -(i * 24); // 120px / 5
+                    const offsetX = (i * 9.2); // 46px / 5 ≈ 9.2px per punto
+                    const offsetY = -(i * 9); // 45px / 5 = 9px per punto
                     trail.style.left = (startX + offsetX) + 'px';
                     trail.style.top = (startY + offsetY) + 'px';
                     screen.appendChild(trail);
