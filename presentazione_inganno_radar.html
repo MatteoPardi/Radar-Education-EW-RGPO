@@ -704,10 +704,18 @@
             const waves = slide.querySelectorAll('.radar-wave');
             waves.forEach(w => w.remove());
             
+            // Rimuovi i pallini con un delay per aumentare la persistenza visiva
+            // Il delay permette ai pallini di rimanere visibili più a lungo
             const blips = slide.querySelectorAll('.radar-blip');
-            blips.forEach(blip => {
-                blip.classList.remove('blip-appear', 'blip-moving');
-            });
+            const blipRemovalTimeout = setTimeout(() => {
+                // Verifica che siamo ancora sulla stessa slide prima di rimuovere i pallini
+                if (slideIndex === currentSlide) {
+                    blips.forEach(blip => {
+                        blip.classList.remove('blip-appear', 'blip-moving');
+                    });
+                }
+            }, 1500); // Delay di 1500ms prima di rimuovere i pallini (aumentato da 0ms)
+            animationTimeouts.push(blipRemovalTimeout);
 
             // Animazioni specifiche per slide
             const initialTimeout = setTimeout(() => {
