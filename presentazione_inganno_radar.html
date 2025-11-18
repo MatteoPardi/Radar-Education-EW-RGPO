@@ -125,7 +125,7 @@
             top: 10px;
             left: 10px;
             transform-origin: center bottom;
-            animation: rotateRadar 4s linear infinite;
+            animation: rotateRadar 3s linear infinite;
         }
 
         @keyframes rotateRadar {
@@ -227,7 +227,7 @@
             left: 50%;
             transform-origin: left center;
             opacity: 0;
-            animation: sweepRadar 3s linear 2.5s infinite;
+            animation: sweepRadar 3s linear 0.5s infinite;
             box-shadow: 0 0 10px #00ff88;
         }
 
@@ -1008,7 +1008,7 @@
                         const distance = Math.sqrt(dx * dx + dy * dy);
                         
                         // Velocità delle onde per la slide 5 (più veloce per impulsi più frequenti)
-                        const waveSpeed = 7000; // pixel al secondo (aumentato per ritmo più rapido)
+                        const waveSpeed = 5000; // pixel al secondo (aumentato per ritmo più rapido)
                         const propagationTime = (distance / waveSpeed) * 1000; // tempo in ms
                         
                         // Onda outgoing: centro fisso sul radar (usa velocità personalizzata)
